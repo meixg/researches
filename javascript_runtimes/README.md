@@ -18,14 +18,12 @@ This report details a comparative analysis of the mquickjs and Node.js JavaScrip
 
 ### Performance
 
-#### React SSR
+#### SSR Simulation
 
-The React SSR benchmark was only performed on Node.js due to mquickjs's lack of the necessary APIs and environment for such a complex task.
-
-| Metric              | Node.js |
-| :------------------ | :------ |
-| Cold Start          | 14ms    |
-| Requests per Second | 905.21  |
+| Runtime  | Execution Time |
+| :------- | :------------- |
+| Node.js  | 388ms          |
+| mquickjs | 30ms           |
 
 #### Fractal Calculation
 
@@ -39,8 +37,8 @@ The React SSR benchmark was only performed on Node.js due to mquickjs's lack of 
 | Scenario             | Node.js     | mquickjs    |
 | :------------------- | :---------- | :---------- |
 | Simple Script        | 44,636 KB   | 1,664 KB    |
+| SSR Simulation       | 46,820 KB   | 10,752 KB   |
 | Loading 10MB File    | 56,796 KB   | 11,776 KB   |
-| Idle SSR Server (RSS)| 125,948 KB  | N/A         |
 
 ## Analysis
 
@@ -50,40 +48,36 @@ mquickjs demonstrates a significantly faster startup time than Node.js, making i
 
 ### Performance
 
-Node.js, with its highly optimized V8 engine, outperforms mquickjs in raw computational performance, as seen in the fractal calculation benchmark. The React SSR benchmark further highlights Node.js's strengths in handling complex, real-world applications.
+In the SSR simulation, mquickjs is surprisingly faster than Node.js. This is likely due to the nature of the test, which is a simple loop of string concatenations. Node.js's JIT compiler and more complex event loop may introduce overhead in this scenario that mquickjs, with its simpler design, avoids.
+
+However, in the more computationally intensive fractal calculation, Node.js's highly optimized V8 engine shows its strength, outperforming mquickjs.
 
 ### Memory Usage
 
-mquickjs's memory usage is a fraction of Node.js's, which is a key advantage in memory-constrained environments like embedded systems or IoT devices.
+mquickjs's memory usage is consistently a fraction of Node.js's across all tests, which is a key advantage in memory-constrained environments like embedded systems or IoT devices.
 
 ## Conclusion
 
 Node.js and mquickjs are designed for different purposes, and their benchmark results reflect this.
 
 - **Node.js** is the ideal choice for building complex, high-performance applications that require a rich set of APIs and a mature ecosystem.
-- **mquickjs** excels in scenarios where resource usage is a critical concern, offering a lightweight and fast-starting runtime for smaller, more specialized tasks.
+- **mquickjs** excels in scenarios where resource usage is a critical concern, offering a lightweight and fast-starting runtime for smaller, more specialized tasks. Its performance in the SSR simulation also suggests it could be a good choice for string-heavy workloads.
 
 The choice between the two will ultimately depend on the specific requirements of the project at hand.
 
 ## Reproducing the Benchmarks
 
-To reproduce the benchmarks, you can use the scripts and applications in this repository.
+To reproduce the benchmarks, you can use the scripts in this repository.
 
-### React SSR Benchmark
+### SSR Simulation Benchmark
 
-1.  Navigate to the React application directory:
-    ```bash
-    cd javascript_runtimes/react-ssr-app
-    ```
-2.  Install the dependencies:
-    ```bash
-    npm install
-    ```
-3.  Create a production build:
-    ```bash
-    npm run build
-    ```
-4.  Run the SSR server:
-    ```bash
-    node server/index.js
-    ```
+- **Node.js:**
+  ```bash
+  time node javascript_runtimes/ssr_simulation.js
+  /usr/bin/time -v node javascript_runtimes/ssr_simulation.js
+  ```
+- **mquickjs:**
+  ```bash
+  time javascript_runtimes/mquickjs/mqjs -I javascript_runtimes/dummy_component.js javascript_runtimes/ssr_simulation.js
+  /usr/bin/time -v javascript_runtimes/mquickjs/mqjs -I javascript_runtimes/dummy_component.js javascript_runtimes/ssr_simulation.js
+  ```

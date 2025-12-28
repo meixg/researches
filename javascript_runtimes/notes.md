@@ -7,12 +7,12 @@
 - **Command:** `time node javascript_runtimes/hello.js`
 - **Result:** `real 0m0.037s`
 
-### React SSR Performance
+### SSR Simulation Performance
 
-- **Cold Start:** `time curl -s http://localhost:3001 > /dev/null`
-  - **Result:** `real 0m0.014s`
-- **Frequent Running (ab -n 100 -c 10):**
-  - **Requests per second:** 905.21
+- **Execution Time:** `time node javascript_runtimes/ssr_simulation.js`
+  - **Result:** `real 0m0.388s`
+- **Memory Usage:** `/usr/bin/time -v node javascript_runtimes/ssr_simulation.js`
+  - **Maximum resident set size:** 46820 KB
 
 ### Memory Usage
 
@@ -22,9 +22,6 @@
 - **Large File Script (`load_large_file.dat`):**
   - **Command:** `/usr/bin/time -v node javascript_runtimes/load_large_file.js`
   - **Maximum resident set size:** 56796 KB
-- **Idle SSR Server:**
-  - **Command:** `ps -o rss,vsz -p $(pgrep -f "node server/index.js")`
-  - **RSS:** 125948 KB
 
 ## mquickjs Benchmarks
 
@@ -32,6 +29,13 @@
 
 - **Command:** `time javascript_runtimes/mquickjs/mqjs javascript_runtimes/hello.js`
 - **Result:** `real 0m0.002s`
+
+### SSR Simulation Performance
+
+- **Execution Time:** `time javascript_runtimes/mquickjs/mqjs -I javascript_runtimes/dummy_component.js javascript_runtimes/ssr_simulation.js`
+  - **Result:** `real 0m0.030s`
+- **Memory Usage:** `/usr/bin/time -v javascript_runtimes/mquickjs/mqjs -I javascript_runtimes/dummy_component.js javascript_runtimes/ssr_simulation.js`
+  - **Maximum resident set size:** 10752 KB
 
 ### Performance (Fractal Calculation)
 
