@@ -5,23 +5,39 @@
 ### Startup Time
 
 - **Command:** `time node javascript_runtimes/hello.js`
-- **Result:** `real 0m0.037s`
+- **Result:** `real 0m0.042s`
 
 ### SSR Simulation Performance
 
 - **Execution Time:** `time node javascript_runtimes/ssr_simulation.js`
-  - **Result:** `real 0m0.388s`
-- **Memory Usage:** `/usr/bin/time -v node javascript_runtimes/ssr_simulation.js`
-  - **Maximum resident set size:** 46820 KB
+  - **Result:** `real 0m0.040s`
+
+### JIT Benchmark
+
+- **Command:** `node javascript_runtimes/jit_benchmark.js`
+- **Results:**
+  - Iteration 0: 5ms
+  - Iteration 1: 3ms
+  - Iteration 2: 3ms
+  - Iteration 3: 3ms
+  - Iteration 4: 2ms
+  - Iteration 5: 2ms
+  - Iteration 6: 3ms
+  - Iteration 7: 3ms
+  - Iteration 8: 3ms
+  - Iteration 9: 3ms
 
 ### Memory Usage
 
 - **Simple Script (`hello.js`):**
   - **Command:** `/usr/bin/time -v node javascript_runtimes/hello.js`
-  - **Maximum resident set size:** 44636 KB
-- **Large File Script (`load_large_file.dat`):**
-  - **Command:** `/usr/bin/time -v node javascript_runtimes/load_large_file.js`
-  - **Maximum resident set size:** 56796 KB
+  - **Maximum resident set size:** 44544 KB
+- **SSR Simulation Script (`ssr_simulation.js`):**
+  - **Command:** `/usr/bin/time -v node javascript_runtimes/ssr_simulation.js`
+  - **Maximum resident set size:** 46812 KB
+- **Large File Script (1MB):**
+  - **Command:** `/usr/bin/time -v node javascript_runtimes/load_large_script.js`
+  - **Maximum resident set size:** 48884 KB
 
 ## mquickjs Benchmarks
 
@@ -32,27 +48,32 @@
 
 ### SSR Simulation Performance
 
-- **Execution Time:** `time javascript_runtimes/mquickjs/mqjs -I javascript_runtimes/dummy_component.js javascript_runtimes/ssr_simulation.js`
-  - **Result:** `real 0m0.030s`
-- **Memory Usage:** `/usr/bin/time -v javascript_runtimes/mquickjs/mqjs -I javascript_runtimes/dummy_component.js javascript_runtimes/ssr_simulation.js`
-  - **Maximum resident set size:** 10752 KB
+- **Execution Time:** `time javascript_runtimes/mquickjs/mqjs javascript_runtimes/ssr_simulation.js`
+  - **Result:** `real 0m0.013s`
 
-### Performance (Fractal Calculation)
+### JIT Benchmark
 
-- **Node.js:** `time node javascript_runtimes/fractal.js`
-  - **Result:** `real 0m0.044s`
-- **mquickjs:** `time javascript_runtimes/mquickjs/mqjs javascript_runtimes/fractal.js`
-  - **Result:** `real 0m0.119s`
+- **Command:** `javascript_runtimes/mquickjs/mqjs javascript_runtimes/jit_benchmark.js`
+- **Results:**
+  - Iteration 0: 75ms
+  - Iteration 1: 73ms
+  - Iteration 2: 72ms
+  - Iteration 3: 73ms
+  - Iteration 4: 72ms
+  - Iteration 5: 73ms
+  - Iteration 6: 73ms
+  - Iteration 7: 73ms
+  - Iteration 8: 72ms
+  - Iteration 9: 73ms
 
 ### Memory Usage
 
 - **Simple Script (`hello.js`):**
-  - **Command:** `javascript_runtimes/mquickjs/mqjs -d javascript_runtimes/hello.js`
-    - **Heap size:** 6776 bytes
   - **Command:** `/usr/bin/time -v javascript_runtimes/mquickjs/mqjs javascript_runtimes/hello.js`
-    - **Maximum resident set size:** 1664 KB
-- **Large File Script (`large_file.dat`):**
-  - **Command:** `javascript_runtimes/mquickjs/mqjs -d -I javascript_runtimes/large_file.dat`
-    - **Heap size:** 6320 bytes
-  - **Command:** `/usr/bin/time -v javascript_runtimes/mquickjs/mqjs -I javascript_runtimes/large_file.dat`
-    - **Maximum resident set size:** 11776 KB
+  - **Maximum resident set size:** 1664 KB
+- **SSR Simulation Script (`ssr_simulation.js`):**
+  - **Command:** `/usr/bin/time -v javascript_runtimes/mquickjs/mqjs javascript_runtimes/ssr_simulation.js`
+  - **Maximum resident set size:** 10752 KB
+- **Large File Script (1MB):**
+  - **Command:** `/usr/bin/time -v javascript_runtimes/mquickjs/mqjs -I javascript_runtimes/large_script.js`
+  - **Maximum resident set size:** 6144 KB

@@ -1,6 +1,6 @@
 # mquickjs vs. Node.js: A Comparative Analysis
 
-This report details a comparative analysis of the mquickjs and Node.js JavaScript runtimes, focusing on startup time, performance, and memory usage.
+This report details a comparative analysis of the mquickjs and Node.js JavaScript runtimes, focusing on startup time, performance, JIT effects, and memory usage.
 
 ## Introduction
 
@@ -13,7 +13,7 @@ This report details a comparative analysis of the mquickjs and Node.js JavaScrip
 
 | Runtime  | "Hello, World!" |
 | :------- | :-------------- |
-| Node.js  | 37ms            |
+| Node.js  | 42ms            |
 | mquickjs | 2ms             |
 
 ### Performance
@@ -22,23 +22,50 @@ This report details a comparative analysis of the mquickjs and Node.js JavaScrip
 
 | Runtime  | Execution Time |
 | :------- | :------------- |
-| Node.js  | 388ms          |
-| mquickjs | 30ms           |
+| Node.js  | 40ms           |
+| mquickjs | 13ms           |
 
-#### Fractal Calculation
+### JIT Effect Investigation
 
-| Runtime  | Execution Time |
-| :------- | :------------- |
-| Node.js  | 44ms           |
-| mquickjs | 119ms          |
+The JIT (Just-In-Time) compilation effect was investigated by running a computationally intensive fractal calculation in a loop for 10 iterations.
+
+#### Node.js
+
+| Iteration | Execution Time |
+| :-------- | :------------- |
+| 0         | 5ms            |
+| 1         | 3ms            |
+| 2         | 3ms            |
+| 3         | 3ms            |
+| 4         | 2ms            |
+| 5         | 2ms            |
+| 6         | 3ms            |
+| 7         | 3ms            |
+| 8         | 3ms            |
+| 9         | 3ms            |
+
+#### mquickjs
+
+| Iteration | Execution Time |
+| :-------- | :------------- |
+| 0         | 75ms           |
+| 1         | 73ms           |
+| 2         | 72ms           |
+| 3         | 73ms           |
+| 4         | 72ms           |
+| 5         | 73ms           |
+| 6         | 73ms           |
+| 7         | 73ms           |
+| 8         | 72ms           |
+| 9         | 73ms           |
 
 ### Memory Usage (Maximum Resident Set Size)
 
 | Scenario             | Node.js     | mquickjs    |
 | :------------------- | :---------- | :---------- |
-| Simple Script        | 44,636 KB   | 1,664 KB    |
-| SSR Simulation       | 46,820 KB   | 10,752 KB   |
-| Loading 10MB File    | 56,796 KB   | 11,776 KB   |
+| Simple Script        | 44,544 KB   | 1,664 KB    |
+| SSR Simulation       | 46,812 KB   | 10,752 KB   |
+| Loading 1MB File     | 48,884 KB   | 6,144 KB    |
 
 ## Analysis
 
@@ -48,9 +75,11 @@ mquickjs demonstrates a significantly faster startup time than Node.js, making i
 
 ### Performance
 
-In the SSR simulation, mquickjs is surprisingly faster than Node.js. This is likely due to the nature of the test, which is a simple loop of string concatenations. Node.js's JIT compiler and more complex event loop may introduce overhead in this scenario that mquickjs, with its simpler design, avoids.
+In the SSR simulation, mquickjs is faster than Node.js. This is likely due to the nature of the test, which is a simple loop of string concatenations. Node.js's JIT compiler and more complex event loop may introduce overhead in this scenario that mquickjs, with its simpler design, avoids.
 
-However, in the more computationally intensive fractal calculation, Node.js's highly optimized V8 engine shows its strength, outperforming mquickjs.
+### JIT Effect
+
+The JIT benchmark highlights a key difference between the two runtimes. Node.js shows a clear JIT effect, with the first iteration being significantly slower than subsequent iterations. This is because the V8 engine's JIT compiler optimizes the code as it runs. In contrast, mquickjs does not have a JIT compiler, so its performance is consistent across all iterations.
 
 ### Memory Usage
 
@@ -60,24 +89,7 @@ mquickjs's memory usage is consistently a fraction of Node.js's across all tests
 
 Node.js and mquickjs are designed for different purposes, and their benchmark results reflect this.
 
-- **Node.js** is the ideal choice for building complex, high-performance applications that require a rich set of APIs and a mature ecosystem.
-- **mquickjs** excels in scenarios where resource usage is a critical concern, offering a lightweight and fast-starting runtime for smaller, more specialized tasks. Its performance in the SSR simulation also suggests it could be a good choice for string-heavy workloads.
+- **Node.js** is the ideal choice for building complex, high-performance applications that require a rich set of APIs and a mature ecosystem. Its JIT compiler provides significant performance benefits for long-running processes.
+- **mquickjs** excels in scenarios where resource usage is a critical concern, offering a lightweight and fast-starting runtime for smaller, more specialized tasks. Its consistent performance and low memory overhead make it a strong contender for embedded systems and serverless functions.
 
 The choice between the two will ultimately depend on the specific requirements of the project at hand.
-
-## Reproducing the Benchmarks
-
-To reproduce the benchmarks, you can use the scripts in this repository.
-
-### SSR Simulation Benchmark
-
-- **Node.js:**
-  ```bash
-  time node javascript_runtimes/ssr_simulation.js
-  /usr/bin/time -v node javascript_runtimes/ssr_simulation.js
-  ```
-- **mquickjs:**
-  ```bash
-  time javascript_runtimes/mquickjs/mqjs -I javascript_runtimes/dummy_component.js javascript_runtimes/ssr_simulation.js
-  /usr/bin/time -v javascript_runtimes/mquickjs/mqjs -I javascript_runtimes/dummy_component.js javascript_runtimes/ssr_simulation.js
-  ```
