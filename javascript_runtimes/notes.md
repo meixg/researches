@@ -1,4 +1,4 @@
-# mquickjs vs. Node.js Benchmark Notes
+# mquickjs vs. Node.js vs. QuickJS Benchmark Notes
 
 ## Node.js Benchmarks
 
@@ -77,3 +77,39 @@
 - **Large File Script (1MB):**
   - **Command:** `/usr/bin/time -v javascript_runtimes/mquickjs/mqjs -I javascript_runtimes/large_script.js`
   - **Maximum resident set size:** 6144 KB
+
+## QuickJS Benchmarks
+
+### Startup Time
+
+- **Command:** `time javascript_runtimes/quickjs/qjs javascript_runtimes/hello.js`
+- **Result:** `real 0m0.003s`
+
+### SSR Simulation Performance
+
+- **Execution Time:** `time javascript_runtimes/quickjs/qjs javascript_runtimes/ssr_simulation.js`
+  - **Result:** `real 0m0.005s`
+
+### JIT Benchmark
+
+- **Command:** `javascript_runtimes/quickjs/qjs javascript_runtimes/jit_benchmark.js`
+- **Results:**
+  - Iteration 0: 68ms
+  - Iteration 1: 66ms
+  - Iteration 2: 67ms
+  - Iteration 3: 68ms
+  - Iteration 4: 71ms
+  - Iteration 5: 68ms
+  - Iteration 6: 71ms
+  - Iteration 7: 73ms
+  - Iteration 8: 69ms
+  - Iteration 9: 73ms
+
+### Memory Usage
+
+- **Simple Script (`hello.js`):**
+  - **Command:** `/usr/bin/time -v javascript_runtimes/quickjs/qjs javascript_runtimes/hello.js`
+  - **Maximum resident set size:** 2688 KB
+- **SSR Simulation Script (`ssr_simulation.js`):**
+  - **Command:** `/usr/bin/time -v javascript_runtimes/quickjs/qjs javascript_runtimes/ssr_simulation.js`
+  - **Maximum resident set size:** 2816 KB

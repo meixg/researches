@@ -1,6 +1,7 @@
 // generate_large_script.js
 var fs = require('fs');
-var stream = fs.createWriteStream('./javascript_runtimes/large_script.js');
+var path = require('path');
+var stream = fs.createWriteStream(path.resolve(__dirname, 'large_script.js'));
 
 stream.once('open', function(fd) {
     stream.write('var largeString = "');
