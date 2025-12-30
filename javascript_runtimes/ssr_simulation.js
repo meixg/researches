@@ -29,5 +29,4 @@ var result = run_ssr_simulation();
 var endTime = getTime();
 
 console.log('SSR simulation took ' + (endTime - startTime) + ' milliseconds.');
-
 console.log('SSR simulation complete. Result length: ' + result.length);

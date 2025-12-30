@@ -47,19 +47,28 @@ The benchmarks can be run from the root of the repository using the following co
 - **mquickjs:** `javascript_runtimes/mquickjs/mqjs javascript_runtimes/jit_benchmark.js`
 - **QuickJS:** `javascript_runtimes/quickjs/qjs javascript_runtimes/jit_benchmark.js`
 
+### Microbenchmark
+
+- **Node.js:** `node javascript_runtimes/microbenchmark/microbench_node.js`
+- **mquickjs:** `javascript_runtimes/mquickjs/mqjs javascript_runtimes/microbenchmark/microbench.js`
+- **QuickJS:** `javascript_runtimes/quickjs/qjs javascript_runtimes/microbenchmark/microbench.js`
+
 ### Memory Usage
 
+*Note: To measure memory usage, a helper script `measure_memory.sh` is provided. This script, along with `load_large_script_no_require.js` and `load_large_script_infinite_loop.js`, are used to capture the memory usage of the runtimes. The main javascript files are temporarily modified to keep the processes alive long enough for measurement.*
+
 - **Node.js:**
-  - ` /usr/bin/time -v node javascript_runtimes/hello.js`
-  - ` /usr/bin/time -v node javascript_runtimes/ssr_simulation.js`
-  - `node javascript_runtimes/generate_large_script.js && /usr/bin/time -v node javascript_runtimes/load_large_script.js && rm javascript_runtimes/large_script.js`
+  - `./measure_memory.sh node javascript_runtimes/hello.js`
+  - `./measure_memory.sh node javascript_runtimes/ssr_simulation.js`
+  - `node javascript_runtimes/generate_large_script.js && ./measure_memory.sh node javascript_runtimes/load_large_script.js && rm javascript_runtimes/large_script.js`
 - **mquickjs:**
-  - ` /usr/bin/time -v javascript_runtimes/mquickjs/mqjs javascript_runtimes/hello.js`
-  - ` /usr/bin/time -v javascript_runtimes/mquickjs/mqjs javascript_runtimes/ssr_simulation.js`
-  - `node javascript_runtimes/generate_large_script.js && /usr/bin/time -v javascript_runtimes/mquickjs/mqjs -I javascript_runtimes/large_script.js && rm javascript_runtimes/large_script.js`
+  - `./measure_memory.sh javascript_runtimes/mquickjs/mqjs javascript_runtimes/hello.js`
+  - `./measure_memory.sh javascript_runtimes/mquickjs/mqjs javascript_runtimes/ssr_simulation.js`
+  - `node javascript_runtimes/generate_large_script.js && ./measure_memory.sh javascript_runtimes/mquickjs/mqjs -I javascript_runtimes/large_script.js javascript_runtimes/load_large_script_no_require.js && rm javascript_runtimes/large_script.js`
 - **QuickJS:**
-  - ` /usr/bin/time -v javascript_runtimes/quickjs/qjs javascript_runtimes/hello.js`
-  - ` /usr/bin/time -v javascript_runtimes/quickjs/qjs javascript_runtimes/ssr_simulation.js`
+  - `./measure_memory.sh javascript_runtimes/quickjs/qjs javascript_runtimes/hello.js`
+  - `./measure_memory.sh javascript_runtimes/quickjs/qjs javascript_runtimes/ssr_simulation.js`
+  - `node javascript_runtimes/generate_large_script.js && ./measure_memory.sh javascript_runtimes/quickjs/qjs -I javascript_runtimes/large_script.js javascript_runtimes/load_large_script_infinite_loop.js && rm javascript_runtimes/large_script.js`
 
 ## Benchmark Results
 
@@ -67,7 +76,7 @@ The benchmarks can be run from the root of the repository using the following co
 
 | Runtime  | "Hello, World!" |
 | :------- | :-------------- |
-| Node.js  | 42ms            |
+| Node.js  | 158ms           |
 | mquickjs | 2ms             |
 | QuickJS  | 3ms             |
 
@@ -77,9 +86,9 @@ The benchmarks can be run from the root of the repository using the following co
 
 | Runtime  | Execution Time |
 | :------- | :------------- |
-| Node.js  | 40ms           |
-| mquickjs | 13ms           |
-| QuickJS  | 5ms            |
+| Node.js  | 0.42ms         |
+| mquickjs | 9ms            |
+| QuickJS  | 0.47ms         |
 
 ### JIT Effect Investigation
 
@@ -89,25 +98,29 @@ The JIT (Just-In-Time) compilation effect was investigated by running a computat
 
 | Iteration | Execution Time |
 | :-------- | :------------- |
-| 0         | 5ms            |
-| 1-9 (avg) | ~3ms           |
+| 0         | 217ms          |
+| 1-9 (avg) | ~28ms          |
 
 #### mquickjs & QuickJS
 
-| Iteration | mquickjs | QuickJS |
-| :-------- | :------- | :------ |
-| 0         | 75ms     | 68ms    |
-| 1-9 (avg) | ~73ms    | ~69ms   |
+| Iteration | mquickjs (avg) | QuickJS (avg) |
+| :-------- | :------------- | :------------ |
+| 0-9       | ~79ms          | ~67ms         |
+
+### Microbenchmark
+
+The microbenchmark results are captured in the following files:
+- `javascript_runtimes/microbenchmark/result_node.md`
+- `javascript_runtimes/microbenchmark/result_mquick.md`
+- `javascript_runtimes/microbenchmark/result_quickjs.md`
 
 ### Memory Usage (Maximum Resident Set Size)
 
 | Scenario             | Node.js     | mquickjs    | QuickJS   |
 | :------------------- | :---------- | :---------- | :-------- |
-| Simple Script        | 44,544 KB   | 1,664 KB    | 2,688 KB  |
-| SSR Simulation       | 46,812 KB   | 10,752 KB   | 2,816 KB  |
-| Loading 1MB File     | 48,884 KB   | 6,144 KB    | N/A       |
-
-*Note: The large file memory benchmark for QuickJS was omitted due to a technical issue with the `qjs` runtime that caused it to hang when loading large files.*
+| Simple Script        | 46,184 KB   | 1,664 KB    | 2,688 KB  |
+| SSR Simulation       | 46,700 KB   | 10,880 KB   | 2,816 KB  |
+| Loading 1MB File     | 48,052 KB   | 5,452 KB    | 3,960 KB  |
 
 ## Analysis
 
@@ -117,7 +130,7 @@ mquickjs and QuickJS are both significantly faster to start than Node.js. This m
 
 ### Performance
 
-In the SSR simulation, QuickJS is the fastest, followed by mquickjs, and then Node.js. This is likely due to the nature of the test, which is a simple loop of string concatenations. The more complex runtimes may introduce overhead that the simpler engines avoid.
+In the SSR simulation, Node.js and QuickJS are significantly faster than mquickjs. This is a change from the previous results, and it's likely due to the fact that we are now measuring only the execution time of the JavaScript code, without the startup time of the runtime.
 
 ### JIT Effect
 
