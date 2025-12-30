@@ -164,13 +164,12 @@ for dirname, _ in subdirs_with_dates:
 
 ### [javascript_runtimes](https://github.com/meixg/researches/tree/main/javascript_runtimes) (2025-12-28)
 
-Evaluating mquickjs against Node.js reveals sharp contrasts in runtime behavior, resource consumption, and execution efficiency. mquickjs, leveraging its minimalist design and lack of JIT compilation, excels in rapid startup and minimal memory footprint, making it particularly suitable for serverless and embedded environments. Node.js, powered by the V8 engine and its JIT compiler, demonstrates substantial performance gains during repeated execution of complex tasks, and offers a far richer API set for building large-scale applications. Benchmarking shows mquickjs is faster for simple workloads and far less demanding in terms of memory, while Node.js is better optimized for intensive or long-running computations. For more details, see [mquickjs](https://github.com/pinchjs/mquickjs) and [Node.js](https://nodejs.org/).
+A head-to-head comparison of JavaScript runtimes—[Node.js](https://nodejs.org/), [mquickjs](https://github.com/ftlabs/mquickjs), and [QuickJS](https://bellard.org/quickjs/)—reveals sharp differences in startup speed, execution performance, JIT support, and memory usage. Lightweight engines like mquickjs and QuickJS start significantly faster and consume far less memory than Node.js, making them ideal for embedded or serverless scenarios. Node.js, powered by the V8 engine and featuring JIT compilation, drastically improves performance on repeated code execution, while both QuickJS and mquickjs provide consistent (though usually slower) results due to the absence of JIT. Each runtime presents clear trade-offs, making them viable for different deployment targets and application requirements.
 
-**Key Findings:**
-- mquickjs startup time (2ms) and memory usage are dramatically lower than Node.js.
-- Node.js’s JIT compilation delivers superior performance on iterative compute-heavy tasks.
-- mquickjs outperforms Node.js for lightweight SSR scenarios but lacks advanced optimization for sustained workloads.
-- The best runtime depends on whether low resource usage or runtime performance is the primary concern.
+**Key findings:**
+- mquickjs and QuickJS start in 2-3ms and use <3MB RAM, versus Node.js’s 158ms startup and ~46MB RAM usage.
+- Node.js’s JIT compiler yields faster execution after initial runs; QuickJS and mquickjs do not optimize repeated executions.
+- Node.js excels for complex, long-running apps; mquickjs/QuickJS suit constrained, short-lived, or embedded uses.
 
 <!--[[[end]]]-->
 
