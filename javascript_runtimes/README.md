@@ -37,9 +37,9 @@ The benchmarks can be run from the root of the repository using the following co
 
 ### SSR Simulation
 
-- **Node.js:** `time node javascript_runtimes/ssr_simulation.js`
-- **mquickjs:** `time javascript_runtimes/mquickjs/mqjs javascript_runtimes/ssr_simulation.js`
-- **QuickJS:** `time javascript_runtimes/quickjs/qjs javascript_runtimes/ssr_simulation.js`
+- **Node.js:** `node javascript_runtimes/ssr_simulation.js`
+- **mquickjs:** `javascript_runtimes/mquickjs/mqjs javascript_runtimes/ssr_simulation.js`
+- **QuickJS:** `javascript_runtimes/quickjs/qjs javascript_runtimes/ssr_simulation.js`
 
 ### JIT Benchmark
 

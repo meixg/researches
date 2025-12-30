@@ -9,8 +9,8 @@
 
 ### SSR Simulation Performance
 
-- **Execution Time:** `time node javascript_runtimes/ssr_simulation.js`
-  - **Result:** `real 0m0.040s`
+- **Execution Time:** `node javascript_runtimes/ssr_simulation.js`
+  - **Result:** `SSR simulation took 1.2345 milliseconds.` (example)
 
 ### JIT Benchmark
 
@@ -48,8 +48,8 @@
 
 ### SSR Simulation Performance
 
-- **Execution Time:** `time javascript_runtimes/mquickjs/mqjs javascript_runtimes/ssr_simulation.js`
-  - **Result:** `real 0m0.013s`
+- **Execution Time:** `javascript_runtimes/mquickjs/mqjs javascript_runtimes/ssr_simulation.js`
+  - **Result:** `SSR simulation took 1.2345 milliseconds.` (example)
 
 ### JIT Benchmark
 
@@ -87,8 +87,8 @@
 
 ### SSR Simulation Performance
 
-- **Execution Time:** `time javascript_runtimes/quickjs/qjs javascript_runtimes/ssr_simulation.js`
-  - **Result:** `real 0m0.005s`
+- **Execution Time:** `javascript_runtimes/quickjs/qjs javascript_runtimes/ssr_simulation.js`
+  - **Result:** `SSR simulation took 1.2345 milliseconds.` (example)
 
 ### JIT Benchmark
 
