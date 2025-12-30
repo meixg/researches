@@ -13,5 +13,5 @@ function run_ssr_simulation() {
     return output;
 }
 
-run_ssr_simulation();
-console.log('SSR simulation complete.');
+var result = run_ssr_simulation();
+console.log('SSR simulation complete. Result length: ' + result.length);
