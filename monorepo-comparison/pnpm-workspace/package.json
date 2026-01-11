@@ -1,0 +1,10 @@
+{
+  "name": "pnpm-workspace-root",
+  "private": true,
+  "scripts": {
+    "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "pnpm": "^7.0.0"
+  }
+}
