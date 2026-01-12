@@ -1,0 +1,10 @@
+{
+  "name": "pkg-c",
+  "version": "1.0.0",
+  "dependencies": {
+    "pkg-d": "workspace:*"
+  },
+  "scripts": {
+    "build": "echo 'building pkg-c'"
+  }
+}
