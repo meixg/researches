@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECharts Y-Axis Compression Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .chart-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .chart {
+            width: 100%;
+            height: 400px;
+        }
+        .description {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f7ff;
+            border-left: 4px solid #1890ff;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>ECharts Y-Axis Compression Demo</h1>
+
+    <div class="chart-container">
+        <div class="chart-title">1. Standard Bar Chart (Original)</div>
+        <div id="chart1" class="chart"></div>
+        <div class="description">
+            <strong>方法:</strong> 标准柱状图,显示所有 Y 轴刻度值
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">2. Hide Middle Labels (Show Only Min & Max)</div>
+        <div id="chart2" class="chart"></div>
+        <div class="description">
+            <strong>方法:</strong> 使用 axisLabel.formatter 函数,只显示最小值和最大值,隐藏中间的标签
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">3. Show Every Nth Label</div>
+        <div id="chart3" class="chart"></div>
+        <div class="description">
+            <strong>方法:</strong> 使用 formatter 函数,每隔 N 个刻度显示一个标签,减少标签密度
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">4. Custom Interval with Axis Split</div>
+        <div id="chart4" class="chart"></div>
+        <div class="description">
+            <strong>方法:</strong> 使用 interval 和 splitNumber 控制刻度间隔和分割数量
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">5. Logarithmic Scale with Hidden Middle Labels</div>
+        <div id="chart5" class="chart"></div>
+        <div class="description">
+            <strong>方法:</strong> 使用对数坐标轴(log)配合 formatter,处理大范围数据
+        </div>
+    </div>
+
+    <script>
+        // Sample data with large range
+        const categories = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+        const data = [10, 25, 45, 80, 150, 280, 420, 600];
+
+        // Chart 1: Standard Bar Chart
+        const chart1 = echarts.init(document.getElementById('chart1'));
+        chart1.setOption({
+            tooltip: {
+                trigger: 'axis'
+            },
+            xAxis: {
+                type: 'category',
+                data: categories
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: data,
+                type: 'bar',
+                itemStyle: {
+                    color: '#5470c6'
+                }
+            }]
+        });
+
+        // Chart 2: Hide Middle Labels (Show Only Min & Max)
+        const chart2 = echarts.init(document.getElementById('chart2'));
+        chart2.setOption({
+            tooltip: {
+                trigger: 'axis'
+            },
+            xAxis: {
+                type: 'category',
+                data: categories
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 600,
+                axisLabel: {
+                    formatter: function(value, index) {
+                        // Only show min (0) and max (600)
+                        if (value === 0 || value === 600) {
+                            return value;
+                        }
+                        return '';  // Hide other labels
+                    }
+                }
+            },
+            series: [{
+                data: data,
+                type: 'bar',
+                itemStyle: {
+                    color: '#91cc75'
+                }
+            }]
+        });
+
+        // Chart 3: Show Every Nth Label
+        const chart3 = echarts.init(document.getElementById('chart3'));
+        const yAxisValues3 = [0, 100, 200, 300, 400, 500, 600];
+        chart3.setOption({
+            tooltip: {
+                trigger: 'axis'
+            },
+            xAxis: {
+                type: 'category',
+                data: categories
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 600,
+                axisLabel: {
+                    formatter: function(value, index) {
+                        // Show every 2nd label
+                        if (index % 2 === 0) {
+                            return value;
+                        }
+                        return '';
+                    }
+                }
+            },
+            series: [{
+                data: data,
+                type: 'bar',
+                itemStyle: {
+                    color: '#fac858'
+                }
+            }]
+        });
+
+        // Chart 4: Custom Interval with Axis Split
+        const chart4 = echarts.init(document.getElementById('chart4'));
+        chart4.setOption({
+            tooltip: {
+                trigger: 'axis'
+            },
+            xAxis: {
+                type: 'category',
+                data: categories
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 600,
+                interval: 150,  // Control the interval between ticks
+                splitNumber: 4  // Number of segments
+            },
+            series: [{
+                data: data,
+                type: 'bar',
+                itemStyle: {
+                    color: '#ee6666'
+                }
+            }]
+        });
+
+        // Chart 5: Logarithmic Scale with Hidden Middle Labels
+        const chart5 = echarts.init(document.getElementById('chart5'));
+        const logData = [1, 5, 25, 125, 300, 500, 625];
+        chart5.setOption({
+            tooltip: {
+                trigger: 'axis'
+            },
+            xAxis: {
+                type: 'category',
+                data: categories.slice(0, 7)
+            },
+            yAxis: {
+                type: 'log',
+                min: 1,
+                max: 625,
+                logBase: 5,
+                axisLabel: {
+                    formatter: function(value, index) {
+                        // Only show min and max values
+                        if (value === 1 || value === 625) {
+                            return value;
+                        }
+                        return '';  // Hide other labels
+                    }
+                }
+            },
+            series: [{
+                data: logData,
+                type: 'bar',
+                itemStyle: {
+                    color: '#73c0de'
+                }
+            }]
+        });
+
+        // Responsive charts
+        window.addEventListener('resize', function() {
+            chart1.resize();
+            chart2.resize();
+            chart3.resize();
+            chart4.resize();
+            chart5.resize();
+        });
+    </script>
+</body>
+</html>
