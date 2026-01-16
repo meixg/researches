@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECharts Broken Axis (Axis Break) Demo - ECharts 6.0+</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .warning strong {
+            color: #856404;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .chart-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .chart {
+            width: 100%;
+            height: 400px;
+        }
+        .description {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f7ff;
+            border-left: 4px solid #1890ff;
+            font-size: 14px;
+            color: #666;
+        }
+        .code-block {
+            background-color: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>ECharts Broken Axis (Axis Break) Demo</h1>
+
+    <div class="warning">
+        <strong>⚠️ 注意:</strong> ECharts 6.0+ 版本才支持 <code>axis.breaks</code> 功能。
+        如果图表显示异常,请确保使用 ECharts 6.0 或更高版本。
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">1. Standard Bar Chart (No Break)</div>
+        <div id="chart1" class="chart"></div>
+        <div class="description">
+            <strong>原始图表:</strong> 包含极值数据,大部分数据被压缩,难以辨认
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">2. Y-Axis with Single Break (Gap Effect)</div>
+        <div id="chart2" class="chart"></div>
+        <div class="description">
+            <strong>单断裂轴:</strong> 隐藏 [1500, 6500] 区间,中间部分直接消失,形成断裂效果
+        </div>
+        <div class="code-block">
+yAxis: {
+    breaks: [
+        { start: 1500, end: 6500, gap: 30 }
+    ]
+}
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">3. Y-Axis with Multiple Breaks</div>
+        <div id="chart3" class="chart"></div>
+        <div class="description">
+            <strong>多断裂轴:</strong> 同时隐藏多个区间,适用于多个数据段的情况
+        </div>
+        <div class="code-block">
+yAxis: {
+    breaks: [
+        { start: 100, end: 500, gap: 20 },
+        { start: 2000, end: 8000, gap: 30 }
+    ]
+}
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">4. Customized Break Area Style (Zigzag)</div>
+        <div id="chart4" class="chart"></div>
+        <div class="description">
+            <strong>自定义断裂区样式:</strong> 使用锯齿状效果,更直观地表示数据断裂
+        </div>
+        <div class="code-block">
+yAxis: {
+    breaks: [{ start: 1500, end: 6500, gap: 40 }],
+    breakArea: {
+        zigzagAmplitude: 5,  // 锯齿幅度
+        itemStyle: {
+            color: 'rgba(255, 0, 0, 0.1)',
+            borderType: 'dashed'
+        }
+    }
+}
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">5. Percentage Gap Width</div>
+        <div id="chart5" class="chart"></div>
+        <div class="description">
+            <strong>百分比间隙:</strong> 使用百分比设置断裂区宽度,保持响应式比例
+        </div>
+        <div class="code-block">
+yAxis: {
+    breaks: [
+        { start: 1500, end: 6500, gap: '20%' }  // 占坐标轴高度的20%
+    ]
+}
+        </div>
+    </div>
+
+    <script>
+        // Sample data with extreme values
+        const categories = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+        const data = [120, 350, 480, 890, 1200, 6800, 7200, 7500];
+
+        // Chart 1: Standard Bar Chart (No Break)
+        const chart1 = echarts.init(document.getElementById('chart1'));
+        chart1.setOption({
+            title: {
+                text: '原始数据 (包含极值)',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: categories
+            },
+            yAxis: {
+                type: 'value',
+                name: '数值'
+            },
+            series: [{
+                name: 'Value',
+                type: 'bar',
+                data: data,
+                itemStyle: {
+                    color: '#5470c6'
+                },
+                label: {
+                    show: true,
+                    position: 'top'
+                }
+            }]
+        });
+
+        // Chart 2: Y-Axis with Single Break
+        const chart2 = echarts.init(document.getElementById('chart2'));
+        chart2.setOption({
+            title: {
+                text: '单断裂轴效果',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: categories
+            },
+            yAxis: {
+                type: 'value',
+                name: '数值',
+                breaks: [
+                    { start: 1500, end: 6500, gap: 30 }
+                ]
+            },
+            series: [{
+                name: 'Value',
+                type: 'bar',
+                data: data,
+                itemStyle: {
+                    color: '#91cc75'
+                },
+                label: {
+                    show: true,
+                    position: 'top'
+                }
+            }]
+        });
+
+        // Chart 3: Y-Axis with Multiple Breaks
+        const chart3 = echarts.init(document.getElementById('chart3'));
+        chart3.setOption({
+            title: {
+                text: '多断裂轴效果',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: categories
+            },
+            yAxis: {
+                type: 'value',
+                name: '数值',
+                breaks: [
+                    { start: 100, end: 500, gap: 20 },
+                    { start: 2000, end: 8000, gap: 30 }
+                ]
+            },
+            series: [{
+                name: 'Value',
+                type: 'bar',
+                data: [50, 200, 600, 800, 1500, 8500, 9000, 9500],
+                itemStyle: {
+                    color: '#fac858'
+                },
+                label: {
+                    show: true,
+                    position: 'top'
+                }
+            }]
+        });
+
+        // Chart 4: Customized Break Area Style
+        const chart4 = echarts.init(document.getElementById('chart4'));
+        chart4.setOption({
+            title: {
+                text: '自定义断裂区样式 (锯齿效果)',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: categories
+            },
+            yAxis: {
+                type: 'value',
+                name: '数值',
+                breaks: [
+                    { start: 1500, end: 6500, gap: 40 }
+                ],
+                breakArea: {
+                    zigzagAmplitude: 5,  // 锯齿幅度,0表示直线
+                    itemStyle: {
+                        color: 'rgba(255, 0, 0, 0.1)',  // 断裂区域填充色
+                        borderType: 'dashed'  // 边界线样式
+                    }
+                }
+            },
+            series: [{
+                name: 'Value',
+                type: 'bar',
+                data: data,
+                itemStyle: {
+                    color: '#ee6666'
+                },
+                label: {
+                    show: true,
+                    position: 'top'
+                }
+            }]
+        });
+
+        // Chart 5: Percentage Gap Width
+        const chart5 = echarts.init(document.getElementById('chart5'));
+        chart5.setOption({
+            title: {
+                text: '百分比间隙宽度',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: categories
+            },
+            yAxis: {
+                type: 'value',
+                name: '数值',
+                breaks: [
+                    { start: 1500, end: 6500, gap: '20%' }
+                ]
+            },
+            series: [{
+                name: 'Value',
+                type: 'bar',
+                data: data,
+                itemStyle: {
+                    color: '#73c0de'
+                },
+                label: {
+                    show: true,
+                    position: 'top'
+                }
+            }]
+        });
+
+        // Responsive charts
+        window.addEventListener('resize', function() {
+            chart1.resize();
+            chart2.resize();
+            chart3.resize();
+            chart4.resize();
+            chart5.resize();
+        });
+    </script>
+</body>
+</html>

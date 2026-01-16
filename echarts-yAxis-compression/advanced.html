@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECharts Advanced Y-Axis Compression</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .chart-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .chart {
+            width: 100%;
+            height: 400px;
+        }
+        .code-block {
+            background-color: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+        .description {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f7ff;
+            border-left: 4px solid #1890ff;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>ECharts Advanced Y-Axis Compression Techniques</h1>
+
+    <div class="chart-container">
+        <div class="chart-title">1. Dynamic Label Filtering Based on Value Range</div>
+        <div id="chart1" class="chart"></div>
+        <div class="description">
+            <strong>技巧:</strong> 只显示特定范围内的值(如 0-100 和 500-600),隐藏中间区域
+        </div>
+        <div class="code-block">
+yAxis: {
+    axisLabel: {
+        formatter: function(value) {
+            // Only show labels in range [0,100] or [500,600]
+            if ((value >= 0 && value <= 100) || (value >= 500 && value <= 600)) {
+                return value;
+            }
+            return '';
+        }
+    }
+}
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">2. Break Axis Effect (Using Two Series)</div>
+        <div id="chart2" class="chart"></div>
+        <div class="description">
+            <strong>技巧:</strong> 使用双 Y 轴创建断裂轴效果,中间部分被压缩
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">3. Custom Tick Marks with Visual Compression</div>
+        <div id="chart3" class="chart"></div>
+        <div class="description">
+            <strong>技巧:</strong> 自定义刻度标记,在视觉上压缩中间部分
+        </div>
+    </div>
+
+    <script>
+        const categories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
+
+        // Chart 1: Dynamic Label Filtering
+        const chart1 = echarts.init(document.getElementById('chart1'));
+        chart1.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            grid: {
+                left: '15%'
+            },
+            xAxis: {
+                type: 'category',
+                data: categories
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 600,
+                axisLabel: {
+                    formatter: function(value) {
+                        // Only show labels in specific ranges
+                        if ((value >= 0 && value <= 100) || (value >= 500 && value <= 600)) {
+                            return value;
+                        }
+                        return '';
+                    }
+                },
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        type: 'dashed'
+                    }
+                }
+            },
+            series: [{
+                name: 'Value',
+                type: 'bar',
+                data: [20, 50, 80, 150, 300, 450, 520, 580],
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: '#83bff6' },
+                        { offset: 0.5, color: '#188df0' },
+                        { offset: 1, color: '#188df0' }
+                    ])
+                }
+            }]
+        });
+
+        // Chart 2: Break Axis Effect (Two Y-Axes)
+        const chart2 = echarts.init(document.getElementById('chart2'));
+        chart2.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['Low Range', 'High Range']
+            },
+            grid: {
+                left: '15%',
+                right: '15%'
+            },
+            xAxis: {
+                type: 'category',
+                data: categories
+            },
+            yAxis: [
+                {
+                    type: 'value',
+                    name: 'Low Range',
+                    min: 0,
+                    max: 100,
+                    position: 'left',
+                    axisLabel: {
+                        formatter: '{value}'
+                    },
+                    splitLine: {
+                        show: true
+                    }
+                },
+                {
+                    type: 'value',
+                    name: 'High Range',
+                    min: 400,
+                    max: 600,
+                    position: 'right',
+                    axisLabel: {
+                        formatter: '{value}'
+                    },
+                    splitLine: {
+                        show: false
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: 'Low Range',
+                    type: 'bar',
+                    yAxisIndex: 0,
+                    data: [20, 45, 80, 95, 0, 0, 0, 0],
+                    itemStyle: {
+                        color: '#5470c6'
+                    }
+                },
+                {
+                    name: 'High Range',
+                    type: 'bar',
+                    yAxisIndex: 1,
+                    data: [0, 0, 0, 0, 450, 480, 520, 580],
+                    itemStyle: {
+                        color: '#91cc75'
+                    }
+                }
+            ]
+        });
+
+        // Chart 3: Custom Tick Marks with Visual Compression
+        const chart3 = echarts.init(document.getElementById('chart3'));
+        chart3.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            grid: {
+                left: '15%'
+            },
+            xAxis: {
+                type: 'category',
+                data: categories
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 600,
+                interval: 100,
+                axisLabel: {
+                    formatter: function(value, index) {
+                        // Compress middle section visually
+                        const labels = {
+                            0: '0',
+                            100: '100',
+                            200: '',
+                            300: '...',
+                            400: '',
+                            500: '500',
+                            600: '600'
+                        };
+                        return labels[value] || '';
+                    }
+                },
+                axisTick: {
+                    interval: function(index, value) {
+                        // Hide ticks for compressed section
+                        return value !== 200 && value !== 300 && value !== 400;
+                    }
+                },
+                splitLine: {
+                    interval: function(index, value) {
+                        // Hide split lines for compressed section
+                        return value !== 200 && value !== 300 && value !== 400;
+                    }
+                }
+            },
+            series: [{
+                name: 'Value',
+                type: 'bar',
+                data: [25, 80, 180, 320, 420, 480, 550, 590],
+                itemStyle: {
+                    color: '#ee6666'
+                },
+                markLine: {
+                    silent: true,
+                    lineStyle: {
+                        color: '#999',
+                        type: 'dashed'
+                    },
+                    data: [
+                        { yAxis: 150 },
+                        { yAxis: 450 }
+                    ]
+                }
+            }]
+        });
+
+        // Responsive
+        window.addEventListener('resize', function() {
+            chart1.resize();
+            chart2.resize();
+            chart3.resize();
+        });
+    </script>
+</body>
+</html>
