@@ -29,22 +29,32 @@ To validate the claim that `nanolang` is beneficial for LLMs, I will perform a s
     *   **FizzBuzz:** Write a program that prints the numbers from 1 to 100. For multiples of three, print 'Fizz' instead of the number. For multiples of five, print 'Buzz'. For numbers which are multiples of both three and five, print 'FizzBuzz'.
     *   **String reversal:** Write a function that takes a string as input and returns a new string with the characters in reverse order.
 
-2.  **Choose a comparison language.** Python will be used as the comparison language, as it is a widely-used, high-level language that LLMs are generally very good at generating.
+2.  **Choose comparison languages.** Python, Rust, and C will be used as comparison languages.
+    *   **Python:** A widely-used, high-level language that LLMs are generally very good at generating.
+    *   **Rust:** A modern systems programming language with a strong focus on safety and performance.
+    *   **C:** A low-level language that will provide a good comparison point for `nanolang`'s C transpilation.
 
-3.  **Generate solutions using an LLM.** For each problem, I will prompt an LLM to generate a solution in both `nanolang` and Python. The prompts will be as similar as possible to ensure a fair comparison.
+3.  **Generate solutions using an LLM.** For each problem, I will prompt an LLM to generate a solution in `nanolang`, Python, Rust, and C. The prompts will be as similar as possible to ensure a fair comparison.
 
 4.  **Analyze the results.** I will compare the generated code in terms of correctness, conciseness, and the ease with which the LLM was able to produce it. This will help me to form an opinion on whether `nanolang` offers a tangible advantage for LLM-based code generation.
 
 ## Analysis of Results
 
-The generated solutions in both `nanolang` and Python were correct. However, there were some notable differences in terms of conciseness and the ease of generation.
+The generated solutions in all four languages were correct. The most significant differences were in conciseness and the cognitive load required for an LLM to generate the code.
 
-*   **Conciseness:** The Python solutions were generally more concise than the `nanolang` solutions. This is particularly evident in the string reversal problem, where the Python solution is a single line of code, while the `nanolang` solution is a loop. This is to be expected, as Python is a higher-level language with a more extensive standard library and more syntactic sugar.
+*   **Conciseness:** Python and Rust were the most concise, particularly for the string reversal problem, due to their rich standard libraries and expressive syntax (e.g., Python's slicing `s[::-1]` and Rust's iterator chain `.chars().rev().collect()`). C and `nanolang` were more verbose, requiring manual iteration to achieve the same result. This highlights a trade-off: a smaller standard library in `nanolang` means the LLM must generate more boilerplate logic.
 
-*   **Ease of Generation:** From the perspective of an LLM, `nanolang` has several advantages. The prefix notation is unambiguous, and the mandatory testing provides a clear structure for the LLM to follow. The verbosity of the language can also be seen as an advantage, as it makes the code more explicit and easier for the LLM to understand. However, the limited standard library can be a disadvantage, as it may require the LLM to generate more code to accomplish the same task.
+*   **Ease of Generation (LLM Perspective):**
+    *   **Python:** Easiest. Its simple syntax and vast presence in training data make it a natural fit for LLMs.
+    *   **C:** Moderately easy. The syntax is simple and has been stable for decades, ensuring plenty of training data. However, it lacks built-in testing and has subtle pitfalls (e.g., manual memory management, string manipulation) that can be challenging for an LLM to handle correctly.
+    *   **Rust:** Most difficult. While powerful, Rust's strict ownership and borrowing rules, and its more complex type system, present a significant hurdle for current LLMs. Generating idiomatic and correct Rust code is a high bar.
+    *   **Nanolang:** The language strikes an interesting balance. Its prefix notation is unambiguous and easy for a machine to parse and generate. The mandatory `shadow` tests are a key advantage, providing a clear structure for the LLM to follow and a built-in mechanism for self-correction. Compared to C, `nanolang` is less error-prone due to its simplified structure and built-in testing. While its novelty means less training data, its design principles make it fundamentally easier to reason about than Rust or C.
 
 ## Conclusion
 
-The `nanolang` programming language is a very interesting experiment in designing a language specifically for LLM-based code generation. The language's focus on simplicity, clarity, and mandatory testing makes it a very promising platform for this purpose.
+This investigation confirms that `nanolang` is a compelling experiment in designing a language for LLMs. Its core design choices directly address common failure modes for automated code generation.
 
-While it is not clear that `nanolang` is "better" than a language like Python in all cases, it certainly has some unique features that make it well-suited for LLM-based code generation. The language is still in its early stages of development, and it will be interesting to see how it evolves over time.
+-   **Nanolang vs. High-Level Languages (Python):** `nanolang` is more verbose and has a less comprehensive standard library. However, its mandatory testing and unambiguous syntax provide a level of rigor and predictability that can be beneficial.
+-   **Nanolang vs. Systems Languages (Rust, C):** `nanolang` offers a gentler learning curve for an LLM than Rust, while providing more structure and safety than C. The mandatory testing is a significant advantage over both, forcing a level of quality control that is optional in C and Rust.
+
+In summary, `nanolang` occupies a unique and valuable niche. It is not designed to replace general-purpose languages, but rather to excel in a specific domain: generating simple, verifiable, and correct code with LLMs. Its design successfully trades the expressiveness and complexity of other languages for a simpler, more structured, and less ambiguous alternative that is highly conducive to automated code generation.
