@@ -1,0 +1,22 @@
+fn fibonacci(n: int) -> int {
+    if (<= n 1) {
+        return n
+    } else {
+        return (+ (fibonacci (- n 1)) (fibonacci (- n 2)))
+    }
+}
+
+shadow fibonacci {
+    assert (== (fibonacci 0) 0)
+    assert (== (fibonacci 1) 1)
+    assert (== (fibonacci 10) 55)
+}
+
+fn main() -> int {
+    (println (fibonacci 10))
+    return 0
+}
+
+shadow main {
+    assert true
+}
