@@ -26,14 +26,19 @@ This repository has significant potential for training AI agents to generate hig
 
 ## Part 2: Practical Demonstration
 
-This project demonstrates the concepts and best practices learned from the research. It showcases a multi-scene animation with a transition, a text animation, and a data visualization.
+This project has been updated to include a more complex, multi-scene brand promotional video, showcasing a wider range of animation and transition effects.
 
-### Skills Demonstrated in this Project
+### Composition
 
-*   **Multi-scene composition:** The project uses the `@remotion/transitions` library to create a multi-scene composition with a slide transition.
-*   **Text animation:** Scene 1 demonstrates a simple text fade-in animation using `useCurrentFrame` and `interpolate`.
-*   **Data visualization:** Scene 2 demonstrates a staggered bar chart animation, applying the pattern from the `charts.md` skill.
-*   **Best practices:** The project adheres to the best practice of using `useCurrentFrame` for all animations.
+This project contains a single video composition: **BrandVideo**, a complex, multi-scene brand promotional video.
+
+### Skills Demonstrated in the Brand Video
+
+*   **Complex Multi-scene Composition:** The video uses `<TransitionSeries>` to orchestrate a narrative flow with an intro, three feature showcases, and an outro.
+*   **Advanced Transitions:** It employs a variety of transitions (`slide`, `wipe`) to create a dynamic viewing experience.
+*   **Component-Based Scenes:** Each scene (`Intro`, `FeatureScene`, `Outro`) is a reusable React component.
+*   **Prop-driven Content:** The `FeatureScene` component is reused with different props (icon, title, description) to showcase different brand features.
+*   **Complex Animation:** The video includes spring animations for logos, staggered text animations, and coordinated slide-ins for icons.
 
 ### How to Run the Demo
 
@@ -46,10 +51,12 @@ This project demonstrates the concepts and best practices learned from the resea
     npm install
     ```
 3.  **Start the Remotion Studio for a live preview:**
+    In the Studio, you can switch between the `SkillsDemo` and `BrandVideo` compositions.
     ```bash
     npm start
     ```
-4.  **Render the video to a file:**
+4.  **Render the Brand Video to a file:**
+    The `render` script is configured to render the `BrandVideo` composition by default.
     ```bash
     npm run render
     ```

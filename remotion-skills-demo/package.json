@@ -4,7 +4,7 @@
   "description": "A demo project for Remotion skills.",
   "scripts": {
     "start": "remotion studio",
-    "render": "remotion render src/index.ts SkillsDemo out.mp4"
+    "render": "remotion render src/index.ts BrandVideo out.mp4"
   },
   "devDependencies": {
     "eslint": "^8.0.0",
