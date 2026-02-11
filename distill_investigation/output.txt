@@ -1,0 +1,54 @@
+Threshold 0.01:
+
+=== Semantic Deduplication Analysis ===
+
+Total vectors analyzed:  6
+Unique vectors:          5
+Duplicates found:        1
+Potential savings:       16.7%
+
+Clusters used:           1
+Processing time:         0ms
+
+Recommendation: Use 'distill sync --dedup=true' to upload deduplicated vectors.
+
+Threshold 0.05:
+
+=== Semantic Deduplication Analysis ===
+
+Total vectors analyzed:  6
+Unique vectors:          4
+Duplicates found:        2
+Potential savings:       33.3%
+
+Clusters used:           1
+Processing time:         0ms
+
+Recommendation: Use 'distill sync --dedup=true' to upload deduplicated vectors.
+
+Threshold 0.10:
+
+=== Semantic Deduplication Analysis ===
+
+Total vectors analyzed:  6
+Unique vectors:          4
+Duplicates found:        2
+Potential savings:       33.3%
+
+Clusters used:           1
+Processing time:         0ms
+
+Recommendation: Use 'distill sync --dedup=true' to upload deduplicated vectors.
+Threshold 0.05, K=3:
+
+=== Semantic Deduplication Analysis ===
+
+Total vectors analyzed:  6
+Unique vectors:          4
+Duplicates found:        2
+Potential savings:       33.3%
+
+Clusters used:           3
+Processing time:         0ms
+
+Recommendation: Use 'distill sync --dedup=true' to upload deduplicated vectors.
