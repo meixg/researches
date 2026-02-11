@@ -46,6 +46,37 @@ Knip 在性能方面也做了很多考量：
 *   **缓存机制 (Caching)**：使用 `CacheConsultant` 将文件的分析结果缓存到磁盘。如果文件内容未变，Knip 会直接从缓存读取 `FileNode` 信息，大大加快了后续运行的速度。
 *   **并行与延迟处理**：在构建依赖图时，Knip 能够高效地处理多个工作区，并按需延迟执行某些昂贵的分析任务。
 
-## 4. 总结
+## 4. 演示项目 (Demo)
 
-Knip 的实现原理展示了静态分析工具如何通过结合“通用 AST 遍历”和“特定领域的知识（插件）”来提供高精度的结果。它不仅是一个简单的正则匹配器，而是一个深刻理解 TypeScript 模块系统和前端生态配置的智能引擎。
+为了验证 Knip 的分析能力，我们在 `research-knip/demo` 创建了一个演示项目，其中包含以下故意设置的“未使用”项：
+
+1.  **未使用文件**：`src/unused-file.ts`。
+2.  **未使用导出**：`src/util.ts` 中的 `unusedFunction`。
+3.  **未使用依赖**：`package.json` 中的 `lodash`。
+
+### 4.1 运行结果
+
+在 demo 目录下运行 `npx knip` 的输出如下：
+
+```text
+Unused files (1)
+src/unused-file.ts
+
+Unused dependencies (1)
+lodash  package.json:19:6
+
+Unused devDependencies (1)
+@types/lodash  package.json:14:6
+
+Unused exports (1)
+unusedFunction  src/util.ts:5:14
+
+Configuration hints (1)
+index.js    package.json  Package entry file not found
+```
+
+结果准确地识别出了我们设置的所有问题，并额外给出了配置提示（指出 `package.json` 中定义的 `index.js` 入口文件不存在）。
+
+## 5. 总结
+
+Knip 的实现原理展示了静态分析工具如何通过结合“通用 AST 遍历”和“特定领域的知识（插件）”来提供高精度的结果。它不仅是一个简单的正则匹配器，而是一个深刻理解 TypeScript 模块系统和前端生态配置的智能引擎。通过本次研究和演示，我们可以清晰地看到其在减少代码冗余和依赖项维护方面的巨大价值。
