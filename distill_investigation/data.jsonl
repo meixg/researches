@@ -1,0 +1,6 @@
+{"id": "vec1", "values": [1.0, 0.0, 0.0, 0.0], "metadata": {"text": "Apple is a fruit"}}
+{"id": "vec2", "values": [1.0, 0.1, 0.0, 0.0], "metadata": {"text": "Apples are fruits"}}
+{"id": "vec3", "values": [1.0, 0.2, 0.0, 0.0], "metadata": {"text": "The apple is a type of fruit"}}
+{"id": "vec4", "values": [0.0, 1.0, 0.0, 0.0], "metadata": {"text": "London is a city"}}
+{"id": "vec5", "values": [0.0, 1.1, 0.0, 0.0], "metadata": {"text": "London is the capital of UK"}}
+{"id": "vec6", "values": [0.0, 0.0, 1.0, 0.0], "metadata": {"text": "Go is a programming language"}}
