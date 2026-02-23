@@ -39,21 +39,74 @@ For Claude Code, Plannotator leverages the built-in hook system. A `PermissionRe
 
 This allows Plannotator to pause the agent's execution until the user has reviewed the plan.
 
+### Feedback Format
+
+Plannotator communicates with the agent via `stdout` using two main formats depending on the action.
+
+#### A. JSON Hook Decision (e.g., for Claude Code)
+When integrated as a hook, Plannotator returns a JSON object that the agent's hook system understands.
+
+**On Approval:**
+```json
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PermissionRequest",
+    "decision": { "behavior": "allow" }
+  }
+}
+```
+
+**On Requesting Changes:**
+```json
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PermissionRequest",
+    "decision": {
+      "behavior": "deny",
+      "message": "... (Markdown Feedback Content Below) ..."
+    }
+  }
+}
+```
+
+#### B. Structured Markdown Feedback
+The feedback content (sent via `message` in JSON or directly to `stdout`) is structured to be easily parsed by the AI agent:
+
+```markdown
+# Plan Feedback
+
+## 1. Remove this
+```
+text to be removed
+```
+> I don't want this in the plan.
+
+## 2. Add this
+```
+new implementation step
+```
+
+## 3. Change this
+**From:**
+```
+original code or step
+```
+**To:**
+```
+modified code or step
+```
+
+## 4. Feedback on: "specific phrase"
+> User's specific comment about this phrase.
+
+---
+```
+
 ### Block-based Parser
 Plannotator uses a custom markdown parser (`packages/ui/utils/parser.ts`) that decomposes a plan into discrete "blocks" (headings, paragraphs, code blocks, list items).
 - Each block is assigned a unique ID.
 - Annotations are anchored to these block IDs.
 - This allows for precise, line-level feedback that is easy for the AI agent to understand when exported back as markdown.
-
-### Feedback Export
-Annotations are exported into a structured markdown format:
-- **Deletions**: Shows the original text to be removed.
-- **Insertions**: Shows the new text to be added.
-- **Replacements**: Shows a "From/To" comparison.
-- **Comments**: Provides contextual feedback on specific sections.
-
-### Plan Diff Engine
-When an agent submits a revised plan, Plannotator compares it with the previous version stored in `~/.plannotator/history/`. It uses the `diff` library to generate line-level diffs and groups adjacent changes into "modified" blocks to provide a clean "Clean Diff" view for the user.
 
 ## 3. Technology Stack
 
