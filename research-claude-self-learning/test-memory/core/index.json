@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "updatedAt": "2026-03-09T05:25:49.252Z",
+  "items": [
+    {
+      "key": "use userid instead of user_id",
+      "text": "Use userId instead of user_id",
+      "kind": "learning",
+      "hits": 1,
+      "score": 1,
+      "lastSeen": "2026-03-09T05:25:49.329Z"
+    },
+    {
+      "key": "run npm test before git commit",
+      "text": "Run npm test before git commit",
+      "kind": "learning",
+      "hits": 1,
+      "score": 1,
+      "lastSeen": "2026-03-09T05:25:49.329Z"
+    },
+    {
+      "key": "avoid: using wrong variable name",
+      "text": "Avoid: Using wrong variable name",
+      "kind": "antiPattern",
+      "hits": 1,
+      "score": 1,
+      "lastSeen": "2026-03-09T05:25:49.329Z"
+    },
+    {
+      "key": "avoid: forgetting to run tests",
+      "text": "Avoid: Forgetting to run tests",
+      "kind": "antiPattern",
+      "hits": 1,
+      "score": 1,
+      "lastSeen": "2026-03-09T05:25:49.329Z"
+    }
+  ]
+}
