@@ -1,0 +1,4 @@
+{"message": {"role": "user", "content": [{"text": "Can you help me fix this bug in my code? It seems I am using the wrong variable name."}]}}
+{"message": {"role": "assistant", "content": [{"text": "Sure, I see that you used `user_id` instead of `userId`. I have fixed it for you."}]}}
+{"message": {"role": "user", "content": [{"text": "Thanks! Also, I keep forgetting to run tests before committing."}]}}
+{"message": {"role": "assistant", "content": [{"text": "You should always run `npm test` before `git commit`. I'll remind you next time."}]}}
