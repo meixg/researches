@@ -160,7 +160,16 @@ for dirname, _ in subdirs_with_dates:
             readme_path.write_text('\n'.join(new_lines))
 
 ]]]-->
-## 7 research projects
+## 8 research projects
+
+### [research-claude-self-learning](https://github.com/meixg/researches/tree/main/research-claude-self-learning) (2026-03-09)
+
+Claude Code Self-Learning introduces a plugin for [Claude Code](https://claude.ai/code) that enables the system to autonomously reflect on its performance, capturing errors and improvements after each session. By leveraging event hooks, it maintains a ranked, persistent memory of its learnings, automatically injecting these insights into new sessions to minimize repeated mistakes. Integration with git ensures memory durability, while the structured storage and context injection make learnings easily accessible and actionable. The project adapts concepts from [pi-self-learning](https://github.com/nlpx/pi-self-learning) and operates through configurable script hooks for session lifecycle events.
+
+**Key features:**
+- Automatic extraction and ranking of learnings based on conversation transcripts.
+- Persistent memory with daily logs, a scored index, and a rendered core file.
+- Seamless integration with Claude Code’s native hooks and optional git backup for version control.
 
 ### [research-plannotator](https://github.com/meixg/researches/tree/main/research-plannotator) (2026-02-23)
 
