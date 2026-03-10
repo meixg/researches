@@ -6,34 +6,25 @@ The `kiddin9/Kwrt` project is an automated build system for OpenWrt firmware, de
 ## Key Findings
 
 ### 1. Project Structure
-- `.github/workflows/`: Contains the CI/CD pipelines. `Openwrt-AutoBuild.yml` is the core build script.
+- `.github/workflows/`: Contains the CI/CD pipelines.
+    - `Openwrt-AutoBuild.yml`: The core build script.
+    - `repo-dispatcher.yml`: Handles triggering builds for multiple targets via GitHub API.
 - `devices/`: The heart of the hardware adaptation.
     - `common/`: Contains scripts (`diy.sh`), patches, and base configurations shared across all devices.
     - `<device_name>/`: Contains device-specific configurations, patches, and `diy.sh` scripts.
 
-### 2. Adaptation Mechanism
-The adaptation for different hardware is achieved through a multi-layered approach:
+### 2. Adaptation Mechanism: GitHub Runner vs. Adaptation Layer
+- **GitHub Runner**: GitHub Actions provides standardized virtual machines (typically Ubuntu) as build runners. These runners are **not** the target hardware; they are just the environment where the compilation (cross-compilation) happens.
+- **Adaptation Layer**: The "adaptation" is implemented by the Kwrt project itself through the `devices/` directory.
+    - It uses the OpenWrt **buildroot** system, which is designed for cross-compilation.
+    - The Kwrt project provides the necessary configuration fragments (`.config`), patches, and scripts (`diy.sh`) to tell the buildroot how to build for a specific target (e.g., which CPU architecture, which drivers, which kernel version).
+    - GitHub Actions simply automates the process of invoking this buildroot with the correct "adaptation layer" for each hardware target.
 
-- **Modular Configuration**: Each device has its own folder in `devices/`. During the build process, the workflow copies the `common` configuration first, followed by the device-specific configuration, allowing for overrides.
-- **`diy.sh` Scripts**:
-    - `devices/common/diy.sh`: Handles universal tasks like adding software feeds (e.g., `kiddin9/op-packages`), modifying default IP addresses, and pulling specific packages from other OpenWrt forks (ImmortalWrt, LEDE).
-    - `devices/<target>/diy.sh`: Handles device-specific tweaks, such as selecting specific kernel versions, downloading extra drivers (e.g., Realtek r8125/r8126), or pulling target-specific files from other repos.
-- **Patching System**:
-    - The build system automatically applies patches found in `devices/common/patches` and `devices/<target>/patches`.
-    - It supports standard `.patch` files, binary patches (`.bin.patch`), and revert patches (`.revert.patch`).
-- **External Feeds**: It integrates various package feeds, notably `kiddin9/op-packages`, which likely contains pre-tuned or additional applications.
-- **Dynamic Kernel Selection**: Some `diy.sh` scripts (like `amlogic_meson`) explicitly modify the `KERNEL_PATCHVER` to ensure compatibility with specific hardware.
-
-### 3. Build Process (GitHub Actions)
-1. **Trigger**: Manual dispatch or repository dispatch.
-2. **Environment Setup**: Clones the base OpenWrt repository (or a specific branch like `openwrt-25.12`).
-3. **Configuration Loading**:
-    - Copies `devices/common/` to the OpenWrt source.
-    - Copies `devices/${{ matrix.target }}/` to the OpenWrt source.
-    - Runs `common/diy.sh` and then the target's `diy.sh`.
-4. **Patching**: Applies all relevant patches.
-5. **Compilation**: Runs `make defconfig` followed by the actual build command.
-6. **Artifact Management**: Organizes the resulting firmware and uploads it to GitHub Releases or a custom server (`dl.openwrt.ai`).
+### 3. Build Trigger Mechanism (Web Page to GitHub Action)
+- **The Web Page**: The project's README mentions `openwrt.ai`, which is a web-based customization interface.
+- **Trigger**: When a user selects their options on the web page and clicks build, the website sends a `POST` request to the GitHub API (Repository Dispatch event).
+- **Dispatch**: The `repo-dispatcher.yml` workflow (or a similar mechanism) receives this event. It then uses the GitHub API to trigger multiple instances of the `Openwrt-AutoBuild.yml` workflow, passing the specific `target` hardware as a parameter.
+- **Concurrency**: GitHub Actions has limits on concurrent jobs (e.g., 20 or more depending on the account type). By using `repository_dispatch`, the project can queue dozens of builds. GitHub handles the queuing and execution based on its internal capacity and the user's plan.
 
 ## Conclusion
 Kwrt achieves high compatibility by treating hardware adaptation as a set of "overlays" (configs, patches, and scripts) applied on top of a base OpenWrt source. This modularity allows the maintainer to quickly add or update support for new devices by just adding a new directory in `devices/`.
