@@ -1,0 +1,6 @@
+AG-UI (Agent User Interaction Protocol) is an event-based, open-source protocol designed to standardize communication between AI agents and user-facing applications. By leveraging HTTP POST for requests and Server-Sent Events (SSE) for asynchronous, streamed responses, AG-UI overcomes the constraints of traditional REST and GraphQL APIs, particularly for long-running, collaborative, and multimodal tasks. It features real-time token streaming, efficient state synchronization using the Snapshot-Delta model, and robust extensibility via custom and raw events, meta-data support, and middleware for event filtering or transformation. AG-UI is already integrated into leading frameworks such as LangGraph, LlamaIndex, and Microsoft Agent Framework, demonstrating its broad ecosystem adoption. For hands-on examples and documentation, see [index.html](./index.html) or explore its integration with [CopilotKit](https://github.com/copilotkit/copilotkit).
+
+**Key Findings:**
+- Enables real-time, multimodal, and stateful agent interactions, improving HITL (human-in-the-loop) workflows.
+- Offers flexible extensibility for diverse application requirements through custom events and middleware.
+- Supported by major AI frameworks and cloud providers, fostering interoperability across platforms.
