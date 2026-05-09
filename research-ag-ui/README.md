@@ -40,13 +40,27 @@ AG-UI 建立在 HTTP 和 SSE (Server-Sent Events) 之上：
 - `STATE_SNAPSHOT`: 完整状态。
 - `STATE_DELTA`: 基于 JSON Patch (RFC 6902) 的增量更新。
 
-## 4. 生态系统支持
+### 3.5 扩展事件 (Extensibility Events)
+- `CUSTOM`: 允许开发者定义应用特有的事件类型。
+- `RAW`: 封装来自外部系统的原始事件。
+- `META` (草案): 独立于 Agent 运行生命周期的元数据，如点赞/点踩反馈。
+
+## 4. 协议扩展性 (Extensibility)
+
+AG-UI 提供了多种机制来支持功能的横向扩展：
+
+1.  **Custom Events**: 通过 `name` 和 `value` 字段，开发者可以轻松定义如 `UI_NAVIGATION` 或 `CONFUSION_DETECTION` 等自定义信令。
+2.  **Raw Events**: 允许将其他协议（如 MCP 或 A2A）的事件透传到前端，实现多协议融合。
+3.  **Meta Events (Draft)**: 引入了 "Side-band" 概念，允许在 Agent 未运行的情况下发送数据（例如用户在历史记录中添加笔记）。
+4.  **Middleware (中间件)**: 协议支持在事件流出前对其进行拦截、转换或过滤。
+
+## 5. 生态系统支持
 
 AG-UI 已获得多家大厂及主流框架支持：
 - **框架**: LangGraph, CrewAI, Microsoft Agent Framework, Pydantic AI, LlamaIndex, AG2, Mastra 等。
 - **厂商**: Microsoft, Google, AWS (Bedrock).
 - **客户端**: CopilotKit, Terminal.
 
-## 5. 快速学习资源
+## 6. 快速学习资源
 
 请查看本目录下的 [index.html](./index.html)，该页面提供了详细的代码示例和交互式文档。

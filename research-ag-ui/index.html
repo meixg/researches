@@ -211,11 +211,53 @@ function handleAGUIEvent(event) {
             </div>
         </section>
 
-        <!-- 5. 交互式模拟 -->
+        <!-- 5. 协议扩展性 -->
         <section class="mb-16">
             <h2 class="text-2xl font-bold mb-6 flex items-center">
                 <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">5</span>
-                交互式事件流模拟器
+                协议扩展性 (Extensibility)
+            </h2>
+            <div class="bg-blue-50 border-l-4 border-blue-600 p-6 rounded-r-lg mb-8">
+                <p class="text-gray-700 leading-relaxed">
+                    AG-UI 并非封闭协议，它通过以下三种核心机制支持自定义扩展，确保能适配各种垂直领域的需求。
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-5 rounded-xl border hover:shadow-md transition">
+                    <h3 class="font-bold text-blue-700 mb-3">Custom Events</h3>
+                    <p class="text-xs text-gray-500 mb-4">最常用的扩展方式，用于应用特定的指令。</p>
+                    <pre class="bg-gray-100 p-2 rounded text-[10px] text-gray-700"><code>{
+  "type": "CUSTOM",
+  "name": "SHOW_CHART",
+  "value": { "type": "pie", "data": [10, 20] }
+}</code></pre>
+                </div>
+                <div class="bg-white p-5 rounded-xl border hover:shadow-md transition">
+                    <h3 class="font-bold text-blue-700 mb-3">Raw Events</h3>
+                    <p class="text-xs text-gray-500 mb-4">用于透传外部协议（如 MCP）的原始载荷。</p>
+                    <pre class="bg-gray-100 p-2 rounded text-[10px] text-gray-700"><code>{
+  "type": "RAW",
+  "source": "mcp-server",
+  "event": { ...mcpPayload }
+}</code></pre>
+                </div>
+                <div class="bg-white p-5 rounded-xl border hover:shadow-md transition">
+                    <h3 class="font-bold text-blue-700 mb-3">Meta Events</h3>
+                    <p class="text-xs text-gray-500 mb-4">用于独立于运行状态的元数据（草案）。</p>
+                    <pre class="bg-gray-100 p-2 rounded text-[10px] text-gray-700"><code>{
+  "type": "META",
+  "metaType": "thumbs_up",
+  "payload": { "messageId": "m1" }
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. 交互式模拟 -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">6</span>
+                交互式事件流模拟器 (含扩展事件)
             </h2>
             <div class="bg-white border rounded-xl p-6 shadow-md">
                 <div class="mb-4">
@@ -266,6 +308,8 @@ function handleAGUIEvent(event) {
             { type: 'TEXT_MESSAGE_START', messageId: 'm_002', role: 'assistant' },
             { type: 'TEXT_MESSAGE_CONTENT', messageId: 'm_002', delta: '上海明天的天气是晴天，22度。' },
             { type: 'TEXT_MESSAGE_END', messageId: 'm_002' },
+            { type: 'CUSTOM', name: 'HIGHLIGHT_CARD', value: { color: 'gold' } },
+            { type: 'META', metaType: 'thumbs_up', payload: { messageId: 'm_002' } },
             { type: 'RUN_FINISHED', runId: 'r_001' }
         ];
 
@@ -301,6 +345,16 @@ function handleAGUIEvent(event) {
                 } else if (ev.type === 'TOOL_CALL_RESULT') {
                     const tool = document.getElementById(ev.toolCallId);
                     if (tool) tool.textContent += ' [完成]';
+                } else if (ev.type === 'CUSTOM') {
+                    const customMsg = document.createElement('div');
+                    customMsg.className = 'text-xs bg-yellow-50 p-2 rounded border border-yellow-200 mt-2 font-bold text-yellow-700';
+                    customMsg.textContent = `[自定义指令: ${ev.name}] -> 高亮卡片为 ${ev.value.color}`;
+                    uiDisplay.appendChild(customMsg);
+                } else if (ev.type === 'META') {
+                    const metaMsg = document.createElement('div');
+                    metaMsg.className = 'text-xs text-right mt-1';
+                    metaMsg.innerHTML = `<span class="bg-gray-200 px-2 py-1 rounded">👍 已收到您的反馈 (${ev.metaType})</span>`;
+                    uiDisplay.appendChild(metaMsg);
                 }
 
                 uiDisplay.scrollTop = uiDisplay.scrollHeight;
