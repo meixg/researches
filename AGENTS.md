@@ -2,7 +2,7 @@ Start by creating a new folder for your work with an appropriate name.
 
 Create a notes.md file in that folder and append notes to it as you work, tracking what you tried and anything you learned along the way.
 
-Build a README.md report at the end of the investigation.
+Build a README.md report and a detailed HTML page at the end of the investigation.
 
 Your final commit should include just that folder and selected items from its contents:
 
