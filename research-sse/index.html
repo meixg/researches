@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSE (Server-Sent Events) 交互式教程</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --bg: #f4f7f6;
+            --code-bg: #e8ecef;
+            --success: #27ae60;
+            --warning: #f39c12;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: var(--primary);
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--accent);
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 10px;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-weight: bold;
+        }
+
+        pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+
+        #log-container {
+            height: 400px;
+            overflow-y: auto;
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            display: flex;
+            flex-direction: column-reverse;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            border-left: 3px solid #444;
+            padding-left: 10px;
+            white-space: pre-wrap; /* Ensure JSON and multi-line data looks correct */
+        }
+
+        .log-time { color: #888; font-size: 0.8em; }
+        .log-type-message { color: #00ff00; }
+        .log-type-notification { color: #3498db; }
+        .log-type-stats { color: #f1c40f; }
+        .log-type-system { color: #e74c3c; font-style: italic; }
+
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        #btn-connect { background: var(--success); color: white; }
+        #btn-connect:hover { background: #219150; }
+        #btn-disconnect { background: #e74c3c; color: white; }
+        #btn-disconnect:hover { background: #c0392b; }
+        #btn-clear { background: #95a5a6; color: white; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .status-disconnected { background: #eee; color: #666; }
+        .status-connecting { background: var(--warning); color: white; }
+        .status-connected { background: var(--success); color: white; }
+
+        .note {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffeeba;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        @media (max-width: 800px) {
+            .container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Server-Sent Events (SSE)</h1>
+        <p>一种简单、强大的通过 HTTP 进行实时更新流传输的方式。</p>
+    </header>
+
+    <div class="container">
+        <!-- Documentation Side -->
+        <section>
+            <h2>什么是 SSE?</h2>
+            <p>SSE 是一种允许服务器通过 HTTP 向网页推送数据的标准。与 WebSockets 不同，它是<strong>单向的</strong>（服务器 &rarr; 客户端）。</p>
+
+            <h3>主要优势:</h3>
+            <ul>
+                <li><strong>基于 HTTP:</strong> 无需特殊协议或服务器。兼容大多数代理和防火墙。</li>
+                <li><strong>自动重连:</strong> 如果连接中断，浏览器会自动尝试重新连接。</li>
+                <li><strong>轻量级:</strong> 与轮询或全双工 WebSockets 相比，开销较低。</li>
+            </ul>
+
+            <div class="note">
+                <strong>工作原理:</strong> 服务器发送 <code>Content-Type: text/event-stream</code> 响应头并保持连接开启。
+            </div>
+
+            <h3>协议格式:</h3>
+            <pre>
+id: 123
+event: notification
+data: Hello World!
+retry: 5000
+
+: 这是一条注释</pre>
+
+            <h3>JavaScript API:</h3>
+            <pre>
+const source = new EventSource('/events');
+
+source.onmessage = (e) => {
+  console.log('新消息:', e.data);
+};
+
+source.addEventListener('notification', (e) => {
+  console.log('自定义事件:', e.data);
+});</pre>
+        </section>
+
+        <!-- Live Demo Side -->
+        <section>
+            <h2>实时演示
+                <span id="status-badge" class="status-badge status-disconnected">未连接</span>
+            </h2>
+
+            <div id="log-container">
+                <div class="log-entry log-type-system">点击“连接”开始从服务器接收事件...</div>
+            </div>
+
+            <div class="controls">
+                <button id="btn-connect">连接</button>
+                <button id="btn-disconnect" disabled>断开连接</button>
+                <button id="btn-clear">清空日志</button>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <h4>最后接收的事件类型:</h4>
+                <div id="last-event-type" style="font-weight: bold; color: var(--accent);">无</div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const logContainer = document.getElementById('log-container');
+        const statusBadge = document.getElementById('status-badge');
+        const lastEventType = document.getElementById('last-event-type');
+        const btnConnect = document.getElementById('btn-connect');
+        const btnDisconnect = document.getElementById('btn-disconnect');
+        const btnClear = document.getElementById('btn-clear');
+
+        let eventSource = null;
+
+        function addLog(message, type = 'message') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-type-${type}`;
+
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'log-time';
+            timeSpan.textContent = `[${new Date().toLocaleTimeString()}] `;
+
+            const content = document.createElement('span');
+            content.textContent = message;
+
+            entry.appendChild(timeSpan);
+            entry.appendChild(content);
+            logContainer.prepend(entry);
+        }
+
+        function updateStatus(status) {
+            const statusMap = {
+                'disconnected': '已断开',
+                'connecting': '连接中...',
+                'connected': '已连接'
+            };
+            statusBadge.className = 'status-badge status-' + status;
+            statusBadge.textContent = statusMap[status] || status;
+
+            btnConnect.disabled = (status === 'connected' || status === 'connecting');
+            btnDisconnect.disabled = (status === 'disconnected');
+        }
+
+        function connect() {
+            if (eventSource) return;
+
+            updateStatus('connecting');
+            addLog('正在连接至 /events...', 'system');
+
+            // 1. 初始化 EventSource
+            eventSource = new EventSource('/events');
+
+            // 2. 处理标准 "message" 事件
+            eventSource.onmessage = (event) => {
+                lastEventType.textContent = 'message (标准消息)';
+                addLog(event.data, 'message');
+            };
+
+            // 3. 处理自定义 "notification" 事件
+            eventSource.addEventListener('notification', (event) => {
+                lastEventType.textContent = 'notification (自定义事件)';
+                addLog('🔔 ' + event.data, 'notification');
+            });
+
+            // 4. 处理连接开启
+            eventSource.onopen = () => {
+                updateStatus('connected');
+                addLog('连接已建立！', 'system');
+            };
+
+            // 5. 处理错误
+            eventSource.onerror = (error) => {
+                if (eventSource.readyState === EventSource.CLOSED) {
+                    addLog('服务器关闭了连接。', 'system');
+                    disconnect();
+                } else {
+                    addLog('连接错误。正在尝试重新连接...', 'system');
+                    updateStatus('connecting');
+                }
+            };
+        }
+
+        function disconnect() {
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+                updateStatus('disconnected');
+                addLog('已断开连接。', 'system');
+            }
+        }
+
+        btnConnect.onclick = connect;
+        btnDisconnect.onclick = disconnect;
+        btnClear.onclick = () => {
+            logContainer.innerHTML = '';
+            addLog('日志已清空。', 'system');
+        };
+    </script>
+</body>
+</html>
