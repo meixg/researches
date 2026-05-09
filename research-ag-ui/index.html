@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AG-UI 协议详细调研与学习指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
+        code { font-family: 'Fira Code', monospace; }
+        .event-stream { background-color: #1a202c; color: #cbd5e0; padding: 1rem; border-radius: 0.5rem; }
+        .event-node { border-left: 2px solid #4a5568; padding-left: 1rem; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans leading-relaxed">
+    <div class="max-w-5xl mx-auto px-4 py-12">
+        <header class="mb-16 border-b pb-8">
+            <h1 class="text-4xl font-extrabold text-blue-600 mb-4">AG-UI 协议调研报告</h1>
+            <p class="text-xl text-gray-600">标准化 AI Agent 与前端应用的交互协议 (Agent User Interaction Protocol)</p>
+        </header>
+
+        <!-- 1. 什么是 AG-UI -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">1</span>
+                什么是 AG-UI？
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <p class="mb-4 text-gray-700">
+                        AG-UI 是一套开放、轻量、基于事件的协议，旨在规范 AI 智能体（Agent）如何连接到用户界面。它不仅是简单的请求/响应，更是为长时运行、非确定性、多模态的 Agent 交互量身定做的。
+                    </p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-600">
+                        <li><strong>流式响应</strong>: 实时传输文本 Token 和执行事件。</li>
+                        <li><strong>状态同步</strong>: 保持前端 UI 与后端 Agent 状态一致。</li>
+                        <li><strong>工具透明</strong>: 实时展示工具调用过程及结果。</li>
+                        <li><strong>人机协作</strong>: 支持执行中断、审批和恢复。</li>
+                    </ul>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg text-white">
+                    <h3 class="text-sm font-bold text-blue-400 mb-4 uppercase tracking-widest">架构模型</h3>
+                    <div class="text-xs font-mono leading-relaxed">
+                        [ 用户界面 (React/Vue/CLI) ]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| HTTP POST (指令/消息)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;V<br>
+                        [ AG-UI 协议层 ] <--- (SSE 流式事件回调)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;V<br>
+                        [ Agent 运行时 (LangGraph/CrewAI/...) ]
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 核心通信机制 -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
+                通信机制：HTTP POST + SSE
+            </h2>
+            <div class="space-y-6">
+                <div class="bg-white border rounded-xl overflow-hidden shadow-sm">
+                    <div class="bg-gray-100 px-4 py-2 text-sm font-bold border-b">客户端发起请求 (HTTP POST)</div>
+                    <pre class="p-4 text-sm overflow-x-auto text-blue-800"><code>POST /agent/run
+Content-Type: application/json
+Accept: text/event-stream
+
+{
+    "threadId": "conv_123",
+    "messages": [{ "role": "user", "content": "帮我查询明天的天气" }]
+}</code></pre>
+                </div>
+                <div class="bg-white border rounded-xl overflow-hidden shadow-sm">
+                    <div class="bg-gray-100 px-4 py-2 text-sm font-bold border-b">服务器流式返回 (SSE)</div>
+                    <pre class="p-4 text-sm overflow-x-auto text-green-800"><code>data: {"type": "RUN_STARTED", "runId": "run_001", "threadId": "conv_123"}
+
+data: {"type": "TEXT_MESSAGE_START", "messageId": "msg_001", "role": "assistant"}
+
+data: {"type": "TEXT_MESSAGE_CONTENT", "messageId": "msg_001", "delta": "正在"}
+
+...
+
+data: {"type": "RUN_FINISHED", "runId": "run_001"}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. 核心事件详解 -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">3</span>
+                核心事件详解
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="border p-4 rounded-lg bg-white">
+                    <h3 class="font-bold text-lg mb-2">Lifecycle (生命周期)</h3>
+                    <p class="text-sm text-gray-600 mb-4">管理 Agent 运行状态。</p>
+                    <div class="space-y-2">
+                        <div class="bg-gray-50 p-2 rounded text-xs border"><strong>RUN_STARTED</strong>: 建立 runId 作用域。</div>
+                        <div class="bg-gray-50 p-2 rounded text-xs border"><strong>STEP_STARTED</strong>: 标记子步骤开始。</div>
+                        <div class="bg-gray-50 p-2 rounded text-xs border"><strong>RUN_FINISHED</strong>: 运行成功结束。</div>
+                    </div>
+                </div>
+                <div class="border p-4 rounded-lg bg-white">
+                    <h3 class="font-bold text-lg mb-2">Streaming (文本流)</h3>
+                    <p class="text-sm text-gray-600 mb-4">逐 Token 显示消息内容。</p>
+                    <div class="space-y-2">
+                        <div class="bg-gray-50 p-2 rounded text-xs border"><strong>TEXT_MESSAGE_START</strong>: 初始化消息气泡。</div>
+                        <div class="bg-gray-50 p-2 rounded text-xs border"><strong>TEXT_MESSAGE_CONTENT</strong>: delta 字段含增量。</div>
+                        <div class="bg-gray-50 p-2 rounded text-xs border"><strong>TEXT_MESSAGE_END</strong>: 消息完成。</div>
+                    </div>
+                </div>
+                <div class="border p-4 rounded-lg bg-white">
+                    <h3 class="font-bold text-lg mb-2">Tool Call (工具调用)</h3>
+                    <p class="text-sm text-gray-600 mb-4">透明展示 Agent 的思考与动作。</p>
+                    <div class="space-y-2">
+                        <div class="bg-gray-50 p-2 rounded text-xs border"><strong>TOOL_CALL_START</strong>: 显示调用的工具名。</div>
+                        <div class="bg-gray-50 p-2 rounded text-xs border"><strong>TOOL_CALL_ARGS</strong>: 流式展示参数 JSON。</div>
+                        <div class="bg-gray-50 p-2 rounded text-xs border"><strong>TOOL_CALL_RESULT</strong>: 返回工具执行结果。</div>
+                    </div>
+                </div>
+                <div class="border p-4 rounded-lg bg-white">
+                    <h3 class="font-bold text-lg mb-2">State (状态更新)</h3>
+                    <p class="text-sm text-gray-600 mb-4">同步复杂的 Agent 内部状态。</p>
+                    <div class="space-y-2">
+                        <div class="bg-gray-50 p-2 rounded text-xs border"><strong>STATE_SNAPSHOT</strong>: 全量同步。</div>
+                        <div class="bg-gray-50 p-2 rounded text-xs border"><strong>STATE_DELTA</strong>: JSON Patch 增量同步。</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. 示例代码 -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">4</span>
+                示例代码实现
+            </h2>
+
+            <div class="mb-8">
+                <h3 class="text-lg font-bold mb-3 text-gray-800">Python (FastAPI) 服务器实现</h3>
+                <div class="bg-gray-900 rounded-xl p-4 overflow-hidden shadow-lg">
+                    <pre class="text-xs text-blue-300"><code>from fastapi import FastAPI, Request
+from fastapi.responses import StreamingResponse
+import json, asyncio
+
+app = FastAPI()
+
+async def event_generator():
+    # 模拟 AG-UI 事件流
+    yield f"data: {json.dumps({'type': 'RUN_STARTED', 'runId': '123'})}\n\n"
+    await asyncio.sleep(1)
+
+    yield f"data: {json.dumps({'type': 'TEXT_MESSAGE_START', 'messageId': 'm1', 'role': 'assistant'})}\n\n"
+
+    for word in ["你好", "，我是", "AI", "助手"]:
+        yield f"data: {json.dumps({'type': 'TEXT_MESSAGE_CONTENT', 'messageId': 'm1', 'delta': word})}\n\n"
+        await asyncio.sleep(0.5)
+
+    yield f"data: {json.dumps({'type': 'TEXT_MESSAGE_END', 'messageId': 'm1'})}\n\n"
+    yield f"data: {json.dumps({'type': 'RUN_FINISHED', 'runId': '123'})}\n\n"
+
+@app.post("/agent/run")
+async def run_agent(request: Request):
+    return StreamingResponse(event_generator(), media_type="text/event-stream")</code></pre>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-bold mb-3 text-gray-800">JavaScript 前端消费实现</h3>
+                <div class="bg-gray-900 rounded-xl p-4 overflow-hidden shadow-lg">
+                    <pre class="text-xs text-green-300"><code>async function startChat(userInput) {
+  const response = await fetch('/agent/run', {
+    method: 'POST',
+    body: JSON.stringify({ messages: [{ role: 'user', content: userInput }] }),
+    headers: { 'Accept': 'text/event-stream' }
+  });
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+
+    const chunk = decoder.decode(value);
+    const lines = chunk.split('\n');
+
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const event = JSON.parse(line.substring(6));
+        handleAGUIEvent(event);
+      }
+    }
+  }
+}
+
+function handleAGUIEvent(event) {
+  switch(event.type) {
+    case 'TEXT_MESSAGE_CONTENT':
+      console.log('收到 Token:', event.delta);
+      // 更新 UI 逻辑
+      break;
+    case 'RUN_FINISHED':
+      console.log('执行结束');
+      break;
+  }
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. 协议扩展性 -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">5</span>
+                协议扩展性 (Extensibility)
+            </h2>
+            <div class="bg-blue-50 border-l-4 border-blue-600 p-6 rounded-r-lg mb-8">
+                <p class="text-gray-700 leading-relaxed">
+                    AG-UI 并非封闭协议，它通过以下三种核心机制支持自定义扩展，确保能适配各种垂直领域的需求。
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-5 rounded-xl border hover:shadow-md transition">
+                    <h3 class="font-bold text-blue-700 mb-3">Custom Events</h3>
+                    <p class="text-xs text-gray-500 mb-4">最常用的扩展方式，用于应用特定的指令。</p>
+                    <pre class="bg-gray-100 p-2 rounded text-[10px] text-gray-700"><code>{
+  "type": "CUSTOM",
+  "name": "SHOW_CHART",
+  "value": { "type": "pie", "data": [10, 20] }
+}</code></pre>
+                </div>
+                <div class="bg-white p-5 rounded-xl border hover:shadow-md transition">
+                    <h3 class="font-bold text-blue-700 mb-3">Raw Events</h3>
+                    <p class="text-xs text-gray-500 mb-4">用于透传外部协议（如 MCP）的原始载荷。</p>
+                    <pre class="bg-gray-100 p-2 rounded text-[10px] text-gray-700"><code>{
+  "type": "RAW",
+  "source": "mcp-server",
+  "event": { ...mcpPayload }
+}</code></pre>
+                </div>
+                <div class="bg-white p-5 rounded-xl border hover:shadow-md transition">
+                    <h3 class="font-bold text-blue-700 mb-3">Meta Events</h3>
+                    <p class="text-xs text-gray-500 mb-4">用于独立于运行状态的元数据（草案）。</p>
+                    <pre class="bg-gray-100 p-2 rounded text-[10px] text-gray-700"><code>{
+  "type": "META",
+  "metaType": "thumbs_up",
+  "payload": { "messageId": "m1" }
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. 交互式模拟 -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">6</span>
+                交互式事件流模拟器 (含扩展事件)
+            </h2>
+            <div class="bg-white border rounded-xl p-6 shadow-md">
+                <div class="mb-4">
+                    <button id="simulateBtn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">点击模拟一次典型的 AG-UI 对话流</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="text-sm font-bold mb-2 text-gray-500 uppercase">UI 渲染效果</h4>
+                        <div id="uiDisplay" class="border rounded p-4 h-64 bg-gray-50 overflow-y-auto">
+                            <p class="text-gray-400 italic">等待模拟开始...</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold mb-2 text-gray-500 uppercase">底层协议事件 (JSON Stream)</h4>
+                        <div id="eventLog" class="event-stream text-xs h-64 overflow-y-auto font-mono">
+                            // 实时事件日志
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center text-gray-500 text-sm mt-12 border-t pt-8">
+            AG-UI Protocol Research & Education &copy; 2025
+        </footer>
+    </div>
+
+    <script>
+        const simulateBtn = document.getElementById('simulateBtn');
+        const uiDisplay = document.getElementById('uiDisplay');
+        const eventLog = document.getElementById('eventLog');
+
+        const events = [
+            { type: 'RUN_STARTED', runId: 'r_001', threadId: 't_001' },
+            { type: 'TEXT_MESSAGE_START', messageId: 'm_001', role: 'assistant' },
+            { type: 'TEXT_MESSAGE_CONTENT', messageId: 'm_001', delta: '我' },
+            { type: 'TEXT_MESSAGE_CONTENT', messageId: 'm_001', delta: '正在' },
+            { type: 'TEXT_MESSAGE_CONTENT', messageId: 'm_001', delta: '为你' },
+            { type: 'TEXT_MESSAGE_CONTENT', messageId: 'm_001', delta: '准备' },
+            { type: 'TEXT_MESSAGE_CONTENT', messageId: 'm_001', delta: '天气' },
+            { type: 'TEXT_MESSAGE_CONTENT', messageId: 'm_001', delta: '报告...' },
+            { type: 'TEXT_MESSAGE_END', messageId: 'm_001' },
+            { type: 'TOOL_CALL_START', toolCallId: 'tc_001', toolCallName: 'get_weather' },
+            { type: 'TOOL_CALL_ARGS', toolCallId: 'tc_001', delta: '{"location":' },
+            { type: 'TOOL_CALL_ARGS', toolCallId: 'tc_001', delta: '"Shanghai"}' },
+            { type: 'TOOL_CALL_END', toolCallId: 'tc_001' },
+            { type: 'TOOL_CALL_RESULT', toolCallId: 'tc_001', content: '{"temp": 22, "condition": "Sunny"}' },
+            { type: 'TEXT_MESSAGE_START', messageId: 'm_002', role: 'assistant' },
+            { type: 'TEXT_MESSAGE_CONTENT', messageId: 'm_002', delta: '上海明天的天气是晴天，22度。' },
+            { type: 'TEXT_MESSAGE_END', messageId: 'm_002' },
+            { type: 'CUSTOM', name: 'HIGHLIGHT_CARD', value: { color: 'gold' } },
+            { type: 'META', metaType: 'thumbs_up', payload: { messageId: 'm_002' } },
+            { type: 'RUN_FINISHED', runId: 'r_001' }
+        ];
+
+        simulateBtn.addEventListener('click', async () => {
+            simulateBtn.disabled = true;
+            uiDisplay.innerHTML = '';
+            eventLog.innerHTML = '// 模拟启动...\n';
+
+            let assistantMessage = null;
+
+            for (const ev of events) {
+                // Log event
+                const entry = document.createElement('div');
+                entry.className = 'mb-2 text-blue-300';
+                entry.textContent = `data: ${JSON.stringify(ev)}`;
+                eventLog.appendChild(entry);
+                eventLog.scrollTop = eventLog.scrollHeight;
+
+                // Update UI
+                if (ev.type === 'TEXT_MESSAGE_START') {
+                    assistantMessage = document.createElement('div');
+                    assistantMessage.className = 'bg-blue-100 p-2 rounded mb-2 border border-blue-200';
+                    assistantMessage.innerHTML = '<strong>AI:</strong> ';
+                    uiDisplay.appendChild(assistantMessage);
+                } else if (ev.type === 'TEXT_MESSAGE_CONTENT') {
+                    assistantMessage.innerHTML += ev.delta;
+                } else if (ev.type === 'TOOL_CALL_START') {
+                    const toolCall = document.createElement('div');
+                    toolCall.className = 'text-xs text-gray-500 italic mb-2';
+                    toolCall.id = ev.toolCallId;
+                    toolCall.textContent = `[调用工具: ${ev.toolCallName}...]`;
+                    uiDisplay.appendChild(toolCall);
+                } else if (ev.type === 'TOOL_CALL_RESULT') {
+                    const tool = document.getElementById(ev.toolCallId);
+                    if (tool) tool.textContent += ' [完成]';
+                } else if (ev.type === 'CUSTOM') {
+                    const customMsg = document.createElement('div');
+                    customMsg.className = 'text-xs bg-yellow-50 p-2 rounded border border-yellow-200 mt-2 font-bold text-yellow-700';
+                    customMsg.textContent = `[自定义指令: ${ev.name}] -> 高亮卡片为 ${ev.value.color}`;
+                    uiDisplay.appendChild(customMsg);
+                } else if (ev.type === 'META') {
+                    const metaMsg = document.createElement('div');
+                    metaMsg.className = 'text-xs text-right mt-1';
+                    metaMsg.innerHTML = `<span class="bg-gray-200 px-2 py-1 rounded">👍 已收到您的反馈 (${ev.metaType})</span>`;
+                    uiDisplay.appendChild(metaMsg);
+                }
+
+                uiDisplay.scrollTop = uiDisplay.scrollHeight;
+                await new Promise(r => setTimeout(r, 200));
+            }
+
+            simulateBtn.disabled = false;
+        });
+    </script>
+</body>
+</html>
