@@ -6,12 +6,15 @@
     <title>SSE (Server-Sent Events) 交互式教程</title>
     <style>
         :root {
-            --primary: #2c3e50;
-            --accent: #3498db;
+            --primary: #263238;
+            --accent: #0f766e;
+            --accent-2: #2563eb;
             --bg: #f4f7f6;
             --code-bg: #e8ecef;
             --success: #27ae60;
             --warning: #f39c12;
+            --danger: #c2410c;
+            --border: #d7dfdf;
         }
 
         body {
@@ -28,7 +31,7 @@
             text-align: center;
             margin-bottom: 40px;
             padding: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background: linear-gradient(135deg, #263238, #0f766e);
             color: white;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -52,6 +55,10 @@
             color: var(--accent);
             border-bottom: 2px solid var(--bg);
             padding-bottom: 10px;
+        }
+
+        h3 {
+            margin-top: 26px;
         }
 
         code {
@@ -138,8 +145,68 @@
             border-radius: 0 8px 8px 0;
         }
 
+        .details-grid {
+            display: grid;
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .detail-row {
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            padding: 12px 14px;
+            background: #fbfdfd;
+        }
+
+        .detail-row strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .detail-row.required {
+            border-left-color: var(--danger);
+        }
+
+        .tag {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 1px 7px;
+            border-radius: 999px;
+            background: var(--code-bg);
+            color: var(--primary);
+            font-size: 0.75em;
+            vertical-align: middle;
+        }
+
+        .tag.required {
+            background: #ffedd5;
+            color: var(--danger);
+        }
+
+        .flow {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .flow-step {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            background: white;
+        }
+
+        .flow-step strong {
+            display: block;
+            color: var(--accent-2);
+            margin-bottom: 4px;
+        }
+
         @media (max-width: 800px) {
             .container { grid-template-columns: 1fr; }
+            .flow { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -167,6 +234,26 @@
                 <strong>工作原理:</strong> 服务器发送 <code>Content-Type: text/event-stream</code> 响应头并保持连接开启。
             </div>
 
+            <h3>HTTP 响应头:</h3>
+            <div class="details-grid">
+                <div class="detail-row required">
+                    <strong><code>Content-Type: text/event-stream</code><span class="tag required">必须</span></strong>
+                    <span>告诉浏览器把响应 body 当作 SSE 事件流解析。没有它，<code>EventSource</code> 不会按 SSE 协议处理响应。</span>
+                </div>
+                <div class="detail-row">
+                    <strong><code>Cache-Control: no-cache</code><span class="tag">强烈建议</span></strong>
+                    <span>SSE 是实时数据流，不应该被浏览器、代理或 CDN 缓存。缺少它时，某些中间层可能缓存、缓冲或延迟事件。</span>
+                </div>
+                <div class="detail-row">
+                    <strong><code>Connection: keep-alive</code><span class="tag">HTTP/1.1 场景</span></strong>
+                    <span>表达保持连接的意图，但不是 SSE 协议要求。只要服务端不结束响应，连接就可以持续；周期性发送注释行更能防止空闲超时。</span>
+                </div>
+                <div class="detail-row">
+                    <strong><code>Access-Control-Allow-Origin</code><span class="tag">跨域时需要</span></strong>
+                    <span>允许不同源页面连接这个事件流。同源页面访问 <code>/events</code> 时不需要它，生产环境通常应限制为可信域名。</span>
+                </div>
+            </div>
+
             <h3>协议格式:</h3>
             <pre>
 id: 123
@@ -175,6 +262,29 @@ data: Hello World!
 retry: 5000
 
 : 这是一条注释</pre>
+
+            <div class="details-grid">
+                <div class="detail-row">
+                    <strong><code>data:</code></strong>
+                    <span>事件负载。多个 <code>data:</code> 行会被浏览器用换行符合并成一次事件的 <code>event.data</code>。</span>
+                </div>
+                <div class="detail-row">
+                    <strong><code>event:</code></strong>
+                    <span>自定义事件名。省略时触发默认 <code>message</code>；设置后用 <code>addEventListener()</code> 监听对应名称。</span>
+                </div>
+                <div class="detail-row">
+                    <strong><code>id:</code></strong>
+                    <span>事件 ID。浏览器会记住最近的 ID，断线重连时通过 <code>Last-Event-ID</code> 请求头发回服务器。</span>
+                </div>
+                <div class="detail-row">
+                    <strong><code>retry:</code></strong>
+                    <span>设置自动重连等待时间，单位毫秒。它不是业务消息，而是更新 <code>EventSource</code> 的重连策略。</span>
+                </div>
+            </div>
+
+            <div class="note">
+                <strong>空行很重要:</strong> SSE 用一个空行结束当前事件。没有结尾的 <code>\n\n</code>，浏览器会继续缓冲，不会把事件派发给 JavaScript。
+            </div>
 
             <h3>JavaScript API:</h3>
             <pre>
@@ -187,6 +297,22 @@ source.onmessage = (e) => {
 source.addEventListener('notification', (e) => {
   console.log('自定义事件:', e.data);
 });</pre>
+
+            <h3>EventSource 做了什么?</h3>
+            <div class="flow">
+                <div class="flow-step">
+                    <strong>1. 打开连接</strong>
+                    <span>浏览器发起一个普通的 HTTP GET 请求到 <code>/events</code>。</span>
+                </div>
+                <div class="flow-step">
+                    <strong>2. 解析事件流</strong>
+                    <span>按 SSE 规范读取 <code>data</code>、<code>event</code>、<code>id</code>、<code>retry</code> 字段。</span>
+                </div>
+                <div class="flow-step">
+                    <strong>3. 自动恢复</strong>
+                    <span>连接失败后自动重连，并在可用时带上 <code>Last-Event-ID</code>。</span>
+                </div>
+            </div>
         </section>
 
         <!-- Live Demo Side -->
