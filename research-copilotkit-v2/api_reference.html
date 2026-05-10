@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CopilotKit V2 API Interactive Reference</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+    <style>
+        .sidebar-link.active {
+            background-color: #f3f4f6;
+            color: #2563eb;
+            font-weight: 600;
+        }
+        .demo-container {
+            border: 1px dashed #cbd5e1;
+            background-color: #f8fafc;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+        pre[class*="language-"] {
+            margin: 0 !important;
+            border-radius: 0.5rem !important;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+
+    <!-- Navbar -->
+    <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur">
+        <div class="container flex h-14 items-center px-6">
+            <div class="mr-4 flex">
+                <a class="mr-6 flex items-center space-x-2 font-bold text-xl" href="#">
+                    <span class="text-blue-600">CopilotKit</span> <span>V2 Explorer</span>
+                </a>
+            </div>
+            <div class="flex flex-1 items-center justify-end space-x-4">
+                <nav class="flex items-center space-x-2">
+                    <a target="_blank" rel="noreferrer" href="https://docs.copilotkit.ai/reference/v2/" class="text-sm font-medium hover:underline">Official Docs</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto flex px-6 py-8">
+        <!-- Sidebar -->
+        <aside class="w-64 fixed h-[calc(100vh-8rem)] overflow-y-auto hidden md:block">
+            <nav class="space-y-1">
+                <div class="pb-4">
+                    <h4 class="mb-1 rounded-md px-2 py-1 text-sm font-semibold">Setup</h4>
+                    <a href="#CopilotKit" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">CopilotKit Provider</a>
+                </div>
+                <div class="pb-4">
+                    <h4 class="mb-1 rounded-md px-2 py-1 text-sm font-semibold">Agent & Context</h4>
+                    <a href="#useAgent" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">useAgent</a>
+                    <a href="#useAgentContext" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">useAgentContext</a>
+                    <a href="#useCapabilities" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">useCapabilities</a>
+                    <a href="#useThreads" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">useThreads</a>
+                </div>
+                <div class="pb-4">
+                    <h4 class="mb-1 rounded-md px-2 py-1 text-sm font-semibold">Tools & Rendering</h4>
+                    <a href="#useFrontendTool" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">useFrontendTool</a>
+                    <a href="#useComponent" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">useComponent</a>
+                    <a href="#useHumanInTheLoop" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">useHumanInTheLoop</a>
+                    <a href="#useRenderTool" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">useRenderTool</a>
+                </div>
+                <div class="pb-4">
+                    <h4 class="mb-1 rounded-md px-2 py-1 text-sm font-semibold">Suggestions & Config</h4>
+                    <a href="#useSuggestions" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">useSuggestions</a>
+                    <a href="#useConfigureSuggestions" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">useConfigureSuggestions</a>
+                </div>
+                <div class="pb-4">
+                    <h4 class="mb-1 rounded-md px-2 py-1 text-sm font-semibold">Components</h4>
+                    <a href="#CopilotChat" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">CopilotChat</a>
+                    <a href="#CopilotPopup" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">CopilotPopup</a>
+                    <a href="#CopilotSidebar" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">CopilotSidebar</a>
+                </div>
+                <div class="pb-4">
+                    <h4 class="mb-1 rounded-md px-2 py-1 text-sm font-semibold">Advanced</h4>
+                    <a href="#useInterrupt" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">useInterrupt</a>
+                    <a href="#useCopilotChatConfiguration" class="sidebar-link flex items-center rounded-md px-2 py-1 text-sm hover:bg-gray-100">useCopilotChatConfiguration</a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 md:ml-72 space-y-16 pb-20">
+
+            <!-- Setup Section -->
+            <section id="CopilotKit">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">CopilotKit Provider</h2>
+                    <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-semibold">Provider</span>
+                </div>
+                <p class="text-gray-600 mb-6">The root component that connects your React app to the CopilotKit runtime. It manages the global state, tool registry, and agent connections.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>import { CopilotKit } from "@copilotkit/react-core";
+
+function App() {
+  return (
+    <CopilotKit
+      runtimeUrl="/api/copilotkit"
+      showDevConsole={true}
+    >
+      <YourApp />
+    </CopilotKit>
+  );
+}</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-gray-500 italic">Conceptual Demo</h3>
+                        <div class="demo-container flex items-center justify-center h-48">
+                            <div class="text-center p-6 border bg-white shadow-sm rounded-lg">
+                                <div class="w-12 h-12 bg-blue-600 rounded-full mx-auto mb-2 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                </div>
+                                <p class="font-bold">App Wrapped</p>
+                                <p class="text-xs text-gray-500">Connecting to: /api/copilotkit</p>
+                                <div class="mt-4 flex gap-2 justify-center">
+                                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                    <span class="text-xs font-mono">Status: Connected</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- CopilotSidebar Section -->
+            <section id="CopilotSidebar">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">CopilotSidebar</h2>
+                    <span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-semibold">Component</span>
+                </div>
+                <p class="text-gray-600 mb-6">A fixed sidebar panel for chat. Perfect for persistent assistant presence alongside main content.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>import { CopilotSidebar } from "@copilotkit/react-core/v2";
+
+<CopilotSidebar
+  agentId="researcher"
+  defaultOpen={true}
+  width={350}
+/></code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Sidebar View</h3>
+                        <div class="demo-container h-48 relative border-r-4 border-blue-600 bg-white">
+                            <div class="absolute inset-0 flex items-center justify-center text-gray-300 font-bold uppercase tracking-widest">Main Content Area</div>
+                            <div class="absolute right-0 top-0 bottom-0 w-24 bg-gray-50 border-l flex flex-col p-2 gap-2">
+                                <div class="h-4 bg-blue-200 rounded"></div>
+                                <div class="flex-1 bg-white border rounded"></div>
+                                <div class="h-4 bg-gray-200 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- useInterrupt Section -->
+            <section id="useInterrupt">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">useInterrupt</h2>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-semibold">Hook</span>
+                </div>
+                <p class="text-gray-600 mb-6">Listens for <code>on_interrupt</code> custom events. Allows agents to trigger custom UI interruptions that can be resolved with user input.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>useInterrupt({
+  render: ({ event, resolve }) => (
+    <div className="p-4 border rounded shadow">
+      <p>{event.value.question}</p>
+      <button onClick={() => resolve("Yes")}>Yes</button>
+    </div>
+  )
+});</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 italic">Interrupt Pattern</h3>
+                        <div class="demo-container">
+                            <div class="bg-red-50 border border-red-200 p-3 rounded flex items-center gap-3">
+                                <div class="text-red-600 text-xl">⚠️</div>
+                                <div>
+                                    <p class="text-xs font-bold text-red-800">on_interrupt received</p>
+                                    <p class="text-[10px] text-red-600">Agent paused for dynamic UI resolution</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- useCopilotChatConfiguration Section -->
+            <section id="useCopilotChatConfiguration">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">useCopilotChatConfiguration</h2>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-semibold">Hook</span>
+                </div>
+                <p class="text-gray-600 mb-6">Access localized labels, agent/thread binding, and modal state. Used to customize every string in the UI.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>const { labels } = useCopilotChatConfiguration();
+
+return <div>{labels.welcomeMessageText}</div>;</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 italic">Labels Customization</h3>
+                        <div class="demo-container">
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-[10px] font-mono border-b pb-1">
+                                    <span>chatInputPlaceholder</span>
+                                    <span class="text-blue-600">"Ask me..."</span>
+                                </div>
+                                <div class="flex justify-between text-[10px] font-mono border-b pb-1">
+                                    <span>welcomeMessageText</span>
+                                    <span class="text-blue-600">"Hello user!"</span>
+                                </div>
+                                <div class="flex justify-between text-[10px] font-mono border-b pb-1">
+                                    <span>modalHeaderTitle</span>
+                                    <span class="text-blue-600">"AI Helper"</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- useCapabilities Section -->
+            <section id="useCapabilities">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">useCapabilities</h2>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-semibold">Hook</span>
+                </div>
+                <p class="text-gray-600 mb-6">Read an agent's declared capabilities (tools, streaming, multi-agent, etc.) populated from the runtime <code>/info</code> response.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>const capabilities = useCapabilities();
+
+if (capabilities?.tools?.supported) {
+  // Render tool-specific UI
+}</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-gray-500 italic">Capabilities View</h3>
+                        <div class="demo-container">
+                            <ul class="text-xs space-y-1 font-mono">
+                                <li class="flex justify-between"><span>transport.streaming:</span> <span class="text-green-600">true</span></li>
+                                <li class="flex justify-between"><span>tools.supported:</span> <span class="text-green-600">true</span></li>
+                                <li class="flex justify-between"><span>humanInTheLoop:</span> <span class="text-green-600">true</span></li>
+                                <li class="flex justify-between"><span>multiAgent:</span> <span class="text-red-600">false</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- useThreads Section -->
+            <section id="useThreads">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">useThreads</h2>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-semibold">Hook</span>
+                </div>
+                <p class="text-gray-600 mb-6">Manage conversation threads on the Enterprise Intelligence Platform. Includes renaming, archiving, and real-time sync.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>const { threads, renameThread } = useThreads({
+  agentId: "my-agent"
+});
+
+return (
+  <ul>
+    {threads.map(t => <li key={t.id}>{t.name}</li>)}
+  </ul>
+);</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Thread Management</h3>
+                        <div class="demo-container">
+                            <div class="bg-white border rounded divide-y text-xs">
+                                <div class="p-2 flex justify-between items-center bg-blue-50">
+                                    <span>Plan for Q4 Marketing</span>
+                                    <span class="text-[10px] text-blue-500">ACTIVE</span>
+                                </div>
+                                <div class="p-2 flex justify-between items-center">
+                                    <span>Bug analysis #402</span>
+                                    <button class="text-gray-400 hover:text-red-500">Archive</button>
+                                </div>
+                                <div class="p-2 flex justify-between items-center">
+                                    <span>Feature Request: SSO</span>
+                                    <button class="text-gray-400 hover:text-red-500">Archive</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- useAgent Section -->
+            <section id="useAgent">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">useAgent</h2>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-semibold">Hook</span>
+                </div>
+                <p class="text-gray-600 mb-6">Access the underlying AG-UI agent instance. Useful for manual control over messages, state, and execution.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>import { useAgent } from "@copilotkit/react-core/v2";
+
+function AgentStatus() {
+  const { agent } = useAgent();
+
+  return (
+    <div>
+      <p>Messages: {agent.messages.length}</p>
+      <button onClick={() => agent.runAgent()}>
+        Trigger Agent
+      </button>
+    </div>
+  );
+}</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Simulated State</h3>
+                        <div class="demo-container space-y-4" id="demo-useAgent">
+                            <div class="bg-white p-3 rounded border text-sm font-mono space-y-1">
+                                <p class="text-blue-600 font-bold">Agent Instance (JSON)</p>
+                                <div id="agent-state-output">
+                                    {
+                                      "agentId": "default",
+                                      "isRunning": false,
+                                      "messagesCount": 2
+                                    }
+                                </div>
+                            </div>
+                            <button onclick="simulateAgentRun()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">agent.runAgent()</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- useAgentContext Section -->
+            <section id="useAgentContext">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">useAgentContext</h2>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-semibold">Hook</span>
+                </div>
+                <p class="text-gray-600 mb-6">Expose dynamic, serializable state to the agent. Replacing V1's <code>useCopilotReadable</code>, it ensures the agent stays updated with your app's context.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>useAgentContext({
+  description: "User's current shopping cart",
+  value: cartItems,
+});</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Interactive Demo</h3>
+                        <div class="demo-container">
+                            <div class="flex flex-col gap-3">
+                                <label class="text-xs font-bold uppercase text-gray-400">Application State</label>
+                                <input type="text" id="context-input" oninput="updateContextDemo()" value="[Electronics, Home]" class="border p-2 rounded text-sm" />
+                                <div class="bg-blue-50 p-3 rounded border border-blue-200">
+                                    <p class="text-xs font-bold text-blue-800 mb-1 italic">Agent's View:</p>
+                                    <p class="text-sm text-blue-900">"I am aware the user has <span id="context-val" class="font-bold underline text-blue-600">[Electronics, Home]</span> in their context."</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- useFrontendTool Section -->
+            <section id="useFrontendTool">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">useFrontendTool</h2>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-semibold">Hook</span>
+                </div>
+                <p class="text-gray-600 mb-6">Registers a client-side tool with Zod-based parameter validation. Can include a custom <code>render</code> component to show progress in chat.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>useFrontendTool({
+  name: "sendEmail",
+  description: "Send an email to a recipient",
+  parameters: z.object({
+    to: z.string().email(),
+    body: z.string(),
+  }),
+  handler: async ({ to, body }) => {
+    return `Email sent to ${to}`;
+  },
+  render: ({ args, status }) => (
+    <div className="p-2 border rounded">
+       {status === 'Executing' ? 'Sending...' : 'Sent!'}
+    </div>
+  )
+});</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Tool Invocation Simulation</h3>
+                        <div class="demo-container">
+                            <div class="bg-white border rounded shadow-sm overflow-hidden">
+                                <div class="bg-gray-100 px-3 py-2 text-xs font-bold flex justify-between">
+                                    <span>Copilot Chat</span>
+                                    <span class="text-green-600">Agent Calling Tool...</span>
+                                </div>
+                                <div class="p-4 space-y-4">
+                                    <div class="flex justify-start">
+                                        <div class="bg-blue-100 text-blue-800 p-2 rounded-lg text-xs max-w-[80%]">
+                                            I'll send that email for you now.
+                                        </div>
+                                    </div>
+                                    <div id="tool-render-area" class="border-2 border-blue-400 bg-blue-50 p-3 rounded-lg animate-pulse transition-all">
+                                        <p class="text-xs font-bold">Tool: sendEmail</p>
+                                        <p class="text-xs text-gray-500">to: "user@example.com"</p>
+                                        <div class="mt-2 text-blue-600 font-bold text-sm">Sending email...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button onclick="completeTool()" class="mt-4 w-full bg-blue-600 text-white py-1 rounded text-sm">Finish Execution</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- useHumanInTheLoop Section -->
+            <section id="useHumanInTheLoop">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">useHumanInTheLoop</h2>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-semibold">Hook</span>
+                </div>
+                <p class="text-gray-600 mb-6">Pauses agent execution until the user provides input via the provided <code>render</code> component. Perfect for confirmation dialogs.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>useHumanInTheLoop({
+  name: "confirmOrder",
+  description: "Ask user to confirm their order",
+  parameters: z.object({ total: z.number() }),
+  render: ({ args, respond }) => (
+    <div>
+      <p>Total: ${args.total}</p>
+      <button onClick={() => respond({ ok: true })}>Confirm</button>
+    </div>
+  )
+});</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">HITL Simulation</h3>
+                        <div class="demo-container">
+                            <div class="bg-white border rounded shadow-sm overflow-hidden">
+                                <div class="bg-yellow-50 px-3 py-2 text-xs font-bold flex justify-between border-b">
+                                    <span>Interactive Step</span>
+                                    <span class="text-yellow-600">PAUSED</span>
+                                </div>
+                                <div id="hitl-content" class="p-4 text-center space-y-3">
+                                    <p class="text-sm">Confirm payment of <strong>$49.99</strong>?</p>
+                                    <div class="flex gap-2 justify-center">
+                                        <button onclick="respondHITL(true)" class="bg-green-600 text-white px-4 py-1 rounded text-xs">Approve</button>
+                                        <button onclick="respondHITL(false)" class="bg-red-600 text-white px-4 py-1 rounded text-xs">Reject</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="hitl-status" class="mt-2 text-center text-xs text-gray-500 italic">Agent is waiting for your response...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- useComponent Section -->
+            <section id="useComponent">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">useComponent</h2>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-semibold">Hook</span>
+                </div>
+                <p class="text-gray-600 mb-6">A convenience wrapper around <code>useFrontendTool</code>. It automatically generates a tool description and renders a React component using the tool's parameters as props.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>useComponent({
+  name: "WeatherCard",
+  parameters: z.object({
+    city: z.string(),
+    temp: z.number()
+  }),
+  render: ({ city, temp }) => (
+    <div className="bg-blue-500 text-white p-4 rounded">
+      {city}: {temp}°C
+    </div>
+  )
+});</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Component Rendering</h3>
+                        <div class="demo-container">
+                            <div class="bg-white border rounded p-4 shadow-inner">
+                                <div class="bg-blue-600 text-white p-3 rounded shadow-lg animate-bounce">
+                                    <p class="text-xs font-bold uppercase">WeatherCard Component</p>
+                                    <p class="text-xl font-bold">New York: 22°C</p>
+                                </div>
+                                <p class="mt-2 text-[10px] text-gray-400 text-center italic">Automatically rendered from tool args</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- useConfigureSuggestions Section -->
+            <section id="useConfigureSuggestions">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">useConfigureSuggestions</h2>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-semibold">Hook</span>
+                </div>
+                <p class="text-gray-600 mb-6">Configures static or dynamic chat suggestions. Dynamic suggestions are generated by the agent based on instructions.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>useConfigureSuggestions({
+  instructions: "Suggest follow-up questions about the data",
+  maxSuggestions: 3,
+  available: "always"
+});</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Suggestions Demo</h3>
+                        <div class="demo-container">
+                            <div class="space-y-2">
+                                <div class="flex flex-wrap gap-2">
+                                    <button class="bg-white border border-blue-200 text-blue-600 px-3 py-1 rounded-full text-xs hover:bg-blue-50">"What are the next steps?"</button>
+                                    <button class="bg-white border border-blue-200 text-blue-600 px-3 py-1 rounded-full text-xs hover:bg-blue-50">"Explain this chart"</button>
+                                    <button class="bg-white border border-blue-200 text-blue-600 px-3 py-1 rounded-full text-xs hover:bg-blue-50">"Export data"</button>
+                                </div>
+                                <div class="bg-gray-100 h-1 w-full rounded">
+                                    <div class="bg-blue-400 h-1 w-1/2 rounded animate-shimmer"></div>
+                                </div>
+                                <p class="text-[10px] text-gray-400">Suggestions generated by agent context</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- useSuggestions Section -->
+            <section id="useSuggestions">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">useSuggestions</h2>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-semibold">Hook</span>
+                </div>
+                <p class="text-gray-600 mb-6">Read and interact with the current chat suggestions. Subscribes to updates and provides reload/clear controls.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>const { suggestions, isLoading } = useSuggestions();
+
+return (
+  <div className={isLoading ? "opacity-50" : ""}>
+    {suggestions.map(s => <button>{s.title}</button>)}
+  </div>
+);</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Loading State Demo</h3>
+                        <div class="demo-container">
+                            <div class="flex gap-2 animate-pulse">
+                                <div class="h-6 w-24 bg-gray-200 rounded-full"></div>
+                                <div class="h-6 w-32 bg-gray-200 rounded-full"></div>
+                            </div>
+                            <p class="mt-2 text-[10px] text-gray-400 font-mono">isLoading: true</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- useRenderTool Section -->
+            <section id="useRenderTool">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">useRenderTool</h2>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-semibold">Hook</span>
+                </div>
+                <p class="text-gray-600 mb-6">Register a chat renderer for tool calls without providing a handler. Supports named tools and wildcard (<code>"*"</code>) fallbacks.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>useRenderTool({
+  name: "searchDocs",
+  parameters: z.object({ query: z.string() }),
+  render: ({ parameters, status }) => (
+    <div>Searching: {parameters.query}</div>
+  )
+});</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Fallback Renderer</h3>
+                        <div class="demo-container">
+                            <div class="border rounded p-2 bg-white text-[10px]">
+                                <p class="text-gray-500 italic uppercase mb-1">Wildcard Renderer (*)</p>
+                                <div class="flex items-center gap-2">
+                                    <span class="animate-spin text-blue-500">↻</span>
+                                    <span>Executing: <strong>unknown_backend_tool</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- CopilotChat Section -->
+            <section id="CopilotChat">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">CopilotChat</h2>
+                    <span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-semibold">Component</span>
+                </div>
+                <p class="text-gray-600 mb-6">The main chat interface component. It's highly customizable via the V2 **Slot System**.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>import { CopilotChat } from "@copilotkit/react-core/v2";
+
+<CopilotChat
+  agentId="support-agent"
+  labels={{
+    chatInputPlaceholder: "How can we help?",
+  }}
+  welcomeScreen={({ input }) => (
+    <div className="p-8 text-center">
+      <h1>Custom Welcome!</h1>
+      {input}
+    </div>
+  )}
+/></code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">UI Composition Demo</h3>
+                        <div class="demo-container">
+                            <div class="bg-white rounded-lg shadow-xl border h-64 flex flex-col">
+                                <div class="bg-blue-600 p-2 text-white text-xs font-bold rounded-t-lg">CopilotChat Slot System</div>
+                                <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+                                    <div class="flex justify-start">
+                                        <div class="bg-white border p-2 rounded-lg text-xs shadow-sm">
+                                            <span class="text-blue-600 font-bold">Slot: assistantMessage</span><br/>
+                                            Hello! I'm the V2 Assistant.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-2 border-t bg-white">
+                                    <div class="flex gap-2">
+                                        <div class="flex-1 bg-gray-100 rounded p-1 text-[10px] text-gray-400">Slot: input</div>
+                                        <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white text-xs">↑</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="mt-4 text-xs text-gray-500 italic">Every UI piece (input, message bubbles, scroll buttons) can be individually overridden.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- CopilotPopup Section -->
+            <section id="CopilotPopup">
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-3xl font-bold">CopilotPopup</h2>
+                    <span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-semibold">Component</span>
+                </div>
+                <p class="text-gray-600 mb-6">A floating chat popup with a toggle button. Ideal for help-desk or "AI concierge" experiences.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Usage Example</h3>
+                        <pre class="language-tsx"><code>import { CopilotPopup } from "@copilotkit/react-core/v2";
+
+<CopilotPopup
+  agentId="concierge"
+  defaultOpen={false}
+  width={400}
+  labels={{
+    modalHeaderTitle: "Concierge"
+  }}
+/></code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Interactive Popup</h3>
+                        <div class="demo-container relative min-h-[200px]">
+                            <div id="popup-window" class="absolute bottom-4 right-4 w-48 h-64 bg-white border rounded-lg shadow-2xl hidden flex flex-col transition-all transform scale-95 opacity-0">
+                                <div class="bg-blue-600 p-2 text-white text-[10px] font-bold rounded-t-lg flex justify-between">
+                                    <span>Assistant</span>
+                                    <button onclick="togglePopup(false)">×</button>
+                                </div>
+                                <div class="flex-1 p-2 text-[10px]">How can I help?</div>
+                                <div class="p-2 border-t"><div class="bg-gray-100 h-4 rounded w-full"></div></div>
+                            </div>
+                            <button id="popup-toggle" onclick="togglePopup(true)" class="absolute bottom-4 right-4 w-12 h-12 bg-blue-600 rounded-full shadow-lg flex items-center justify-center text-white text-2xl hover:scale-110 transition-transform">
+                                💬
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t bg-white py-6">
+        <div class="container mx-auto px-6 text-center text-sm text-gray-500">
+            CopilotKit V2 Research Artifact - Created for rapid learning.
+        </div>
+    </footer>
+
+    <script>
+        // Demo: Popup
+        function togglePopup(open) {
+            const window = document.getElementById('popup-window');
+            const toggle = document.getElementById('popup-toggle');
+            if (open) {
+                window.classList.remove('hidden');
+                setTimeout(() => {
+                    window.classList.remove('scale-95', 'opacity-0');
+                    window.classList.add('scale-100', 'opacity-100');
+                }, 10);
+                toggle.classList.add('hidden');
+            } else {
+                window.classList.add('scale-95', 'opacity-0');
+                window.classList.remove('scale-100', 'opacity-100');
+                setTimeout(() => {
+                    window.classList.add('hidden');
+                    toggle.classList.remove('hidden');
+                }, 300);
+            }
+        }
+
+        // Demo: useAgent
+        let agentState = {
+            agentId: "default",
+            isRunning: false,
+            messagesCount: 2
+        };
+        function simulateAgentRun() {
+            agentState.isRunning = true;
+            updateAgentDisplay();
+            setTimeout(() => {
+                agentState.isRunning = false;
+                agentState.messagesCount += 1;
+                updateAgentDisplay();
+            }, 2000);
+        }
+        function updateAgentDisplay() {
+            document.getElementById('agent-state-output').innerText = JSON.stringify(agentState, null, 2);
+        }
+
+        // Demo: useAgentContext
+        function updateContextDemo() {
+            const val = document.getElementById('context-input').value;
+            document.getElementById('context-val').innerText = val;
+        }
+
+        // Demo: useFrontendTool
+        function completeTool() {
+            const area = document.getElementById('tool-render-area');
+            area.classList.remove('animate-pulse', 'border-blue-400', 'bg-blue-50');
+            area.classList.add('border-green-400', 'bg-green-50');
+            area.querySelector('.text-blue-600').innerText = '✓ Email Sent Successfully!';
+            area.querySelector('.text-blue-600').classList.replace('text-blue-600', 'text-green-600');
+        }
+
+        // Demo: useHumanInTheLoop
+        function respondHITL(approved) {
+            const content = document.getElementById('hitl-content');
+            const status = document.getElementById('hitl-status');
+            content.innerHTML = `<p class="text-sm ${approved ? 'text-green-600' : 'text-red-600'} font-bold">${approved ? 'APPROVED' : 'REJECTED'}</p><p class="text-xs text-gray-500">Response sent to agent.</p>`;
+            status.innerText = "Agent resumed...";
+            status.classList.add('text-green-600');
+        }
+
+        // Active Sidebar Link tracking
+        window.addEventListener('scroll', () => {
+            let current = "";
+            const sections = document.querySelectorAll('section');
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
