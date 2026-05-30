@@ -1,0 +1,8 @@
+{
+  "name": "stock-sdk-demo",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "stock-sdk": "^1.10.0"
+  }
+}
