@@ -1,0 +1,18 @@
+{
+  "name": "evidence-demo",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "evidence dev",
+    "build": "evidence build",
+    "sources": "evidence sources"
+  },
+  "devDependencies": {
+    "@evidence-dev/evidence": "latest"
+  },
+  "dependencies": {
+    "@evidence-dev/core-components": "^5.4.2",
+    "@evidence-dev/csv": "^1.0.16",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2"
+  }
+}

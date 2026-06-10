@@ -1,0 +1,3 @@
+plugins:
+  "@evidence-dev/csv": {}
+  "@evidence-dev/core-components": {}

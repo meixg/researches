@@ -40,6 +40,22 @@ Evidence follows a modular monorepo architecture. The core philosophy is "BI as 
 *   **Static Site Generation (SSG)**: Fast load times and easy deployment to platforms like Vercel or Netlify.
 *   **Extensible Data Sources**: Plugin system for connecting to various databases and APIs.
 
+## Demo Project
+
+A minimal demo project is included in the `research-evidence/demo` directory. It demonstrates:
+*   **Data Source**: A simple CSV file in `sources/sample_data/orders.csv`.
+*   **Configuration**: `evidence.config.yaml` for plugin management and `sources/sample_data/connection.yaml` for data connection.
+*   **Markdown Dashboard**: `pages/index.md` showing how to use SQL blocks and the `<BarChart>` component.
+
+### How to Run the Demo
+
+To run this demo in your local environment:
+
+1.  Navigate to the demo directory: `cd research-evidence/demo`
+2.  Install dependencies: `npm install --legacy-peer-deps`
+3.  Process data sources: `npx evidence sources`
+4.  Start the development server: `npm run dev`
+
 ## Conclusion
 
 Evidence represents a modern shift in BI, moving away from drag-and-drop interfaces toward a developer-friendly, code-first approach. By leveraging technologies like DuckDB-Wasm and Parquet, it delivers a powerful and responsive user experience while maintaining the simplicity of static site deployment.
