@@ -42,10 +42,15 @@ Evidence follows a modular monorepo architecture. The core philosophy is "BI as 
 
 ## Demo Project
 
-A minimal demo project is included in the `research-evidence/demo` directory. It demonstrates:
-*   **Data Source**: A simple CSV file in `sources/sample_data/orders.csv`.
-*   **Configuration**: `evidence.config.yaml` for plugin management and `sources/sample_data/connection.yaml` for data connection.
-*   **Markdown Dashboard**: `pages/index.md` showing how to use SQL blocks and the `<BarChart>` component.
+A detailed demo project is included in the `research-evidence/demo` directory. It showcases several advanced features of Evidence:
+
+*   **Data Sources**: Multiple CSV files (`orders.csv`, `customers.csv`) managed via `connection.yaml`.
+*   **Interactive Inputs**: Use of `<Dropdown>` to filter data dynamically in the browser.
+*   **Query Chaining**: Demonstrating how queries can reference each other using the `${query_name}` syntax.
+*   **Templated Pages**: Automatic generation of dynamic pages (e.g., `customers/[id].md`) based on data parameters.
+*   **Advanced Components**: Implementation of `<BigValue>`, `<LineChart>`, `<BarChart>`, and `<DataTable>` with search/sort features.
+*   **Control Flow**: Use of Svelte logic like `{#if}` for conditional content rendering based on user input.
+*   **Configuration**: Modern plugin-based configuration in `evidence.config.yaml`.
 
 ### How to Run the Demo
 
