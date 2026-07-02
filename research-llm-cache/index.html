@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Prompt Caching Investigation 2026</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f8f9fa;
+        }
+        h1, h2, h3 {
+            color: #0056b3;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        th {
+            background-color: #e9ecef;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .badge-auto { background-color: #d1ecf1; color: #0c5460; }
+        .badge-exp { background-color: #fff3cd; color: #856404; }
+        .badge-both { background-color: #d4edda; color: #155724; }
+        .highlight {
+            color: #d63384;
+            font-weight: bold;
+        }
+        pre {
+            background: #f1f1f1;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LLM Prompt Caching: 2026 Industry Report</h1>
+        <p>An investigation into how major LLM providers handle prompt and context caching to optimize cost and performance.</p>
+
+        <h2>Summary Table</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Provider</th>
+                    <th>Mode</th>
+                    <th>Discount (Read)</th>
+                    <th>Min. Tokens</th>
+                    <th>Key Feature</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>OpenAI</strong></td>
+                    <td><span class="badge badge-auto">Automatic</span></td>
+                    <td>50%</td>
+                    <td>1,024</td>
+                    <td>Zero config, shared across Org</td>
+                </tr>
+                <tr>
+                    <td><strong>Anthropic</strong></td>
+                    <td><span class="badge badge-exp">Explicit</span></td>
+                    <td>90%</td>
+                    <td>1,024+</td>
+                    <td>Manual breakpoints, high saving</td>
+                </tr>
+                <tr>
+                    <td><strong>DeepSeek</strong></td>
+                    <td><span class="badge badge-auto">Automatic</span></td>
+                    <td>~98%</td>
+                    <td>64</td>
+                    <td>Extreme efficiency, low threshold</td>
+                </tr>
+                <tr>
+                    <td><strong>Google Gemini</strong></td>
+                    <td><span class="badge badge-both">Both</span></td>
+                    <td>75% - 90%</td>
+                    <td>1,024</td>
+                    <td>Storage-based billing for explicit</td>
+                </tr>
+                <tr>
+                    <td><strong>Qwen (Alibaba)</strong></td>
+                    <td><span class="badge badge-both">Both</span></td>
+                    <td>80% - 90%</td>
+                    <td>256 - 1,024</td>
+                    <td>Flexible modes, multi-API support</td>
+                </tr>
+                <tr>
+                    <td><strong>Doubao (ByteDance)</strong></td>
+                    <td><span class="badge badge-auto">Implicit</span></td>
+                    <td>80%</td>
+                    <td>Indeterminate</td>
+                    <td>Aggressive pricing, storage fee</td>
+                </tr>
+                <tr>
+                    <td><strong>MiniMax</strong></td>
+                    <td><span class="badge badge-both">Both</span></td>
+                    <td>80%</td>
+                    <td>512</td>
+                    <td>Anthropic compatibility mode</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Detailed Analysis</h2>
+
+        <h3>1. The "Set and Forget" Group (OpenAI, DeepSeek, GLM)</h3>
+        <p>These providers focus on developer experience by automatically identifying repeating prefixes.
+        <strong>DeepSeek</strong> stands out with its 64-token granularity, making caching effective even for shorter conversations.
+        <strong>OpenAI</strong> requires at least 1,024 tokens, making it most suitable for long system prompts or RAG contexts.</p>
+
+        <h3>2. The "Granular Control" Group (Anthropic, Mistral)</h3>
+        <p><strong>Anthropic</strong> requires developers to explicitly mark content blocks with <code>cache_control</code>. While this adds development overhead, the 90% discount is industry-leading for frontier models.
+        <strong>Mistral</strong> uses a <code>prompt_cache_key</code> to group similar requests together.</p>
+
+        <h3>3. The "Storage" Model (Google Gemini, Doubao)</h3>
+        <p>Gemini's explicit caching is unique because it bills for <strong>storage time</strong> ($/M tokens/hr).
+        This makes it highly predictable for stable, massive datasets (like entire code repositories) that are queried frequently over a fixed window. <strong>Doubao</strong> recently adopted a similar hourly storage billing model.</p>
+
+        <h2>Best Practices for 2026</h2>
+        <ul>
+            <li><strong>Stable Prefixing:</strong> Ensure the first part of your prompt is identical across requests. Even a single extra newline will break the cache.</li>
+            <li><strong>Dynamic Tail:</strong> Move all volatile information (timestamps, unique session IDs, the actual user question) to the end of the message array.</li>
+            <li><strong>Monitor Usage:</strong> Always log the <code>cached_tokens</code> field from the API response to verify your optimization strategy is working.</li>
+        </ul>
+    </div>
+</body>
+</html>
