@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Prompt Caching Investigation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f8f9fa;
+        }
+        h1, h2, h3 {
+            color: #0056b3;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        th {
+            background-color: #e9ecef;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .badge-auto { background-color: #d1ecf1; color: #0c5460; }
+        .badge-exp { background-color: #fff3cd; color: #856404; }
+        .badge-both { background-color: #d4edda; color: #155724; }
+        pre {
+            background: #f1f1f1;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LLM Prompt Caching: Industry Report</h1>
+        <p>An investigation into how major LLM providers handle prompt and context caching to optimize agent implementation.</p>
+
+        <h2>Summary Table</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Provider</th>
+                    <th>Mode</th>
+                    <th>Discount (Read)</th>
+                    <th>Min. Tokens</th>
+                    <th>Implementation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>OpenAI</strong></td>
+                    <td><span class="badge badge-auto">Automatic</span></td>
+                    <td>50%</td>
+                    <td>1,024</td>
+                    <td>Prefix matching</td>
+                </tr>
+                <tr>
+                    <td><strong>Anthropic</strong></td>
+                    <td><span class="badge badge-exp">Explicit</span></td>
+                    <td>90%</td>
+                    <td>1,024+</td>
+                    <td><code>cache_control</code></td>
+                </tr>
+                <tr>
+                    <td><strong>DeepSeek</strong></td>
+                    <td><span class="badge badge-auto">Automatic</span></td>
+                    <td>~90%</td>
+                    <td>64</td>
+                    <td>V2.5/V3 standard</td>
+                </tr>
+                <tr>
+                    <td><strong>Google Gemini</strong></td>
+                    <td><span class="badge badge-exp">Explicit</span></td>
+                    <td>75% - 90%</td>
+                    <td>1,024+</td>
+                    <td><code>CachedContent</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Qwen (Alibaba)</strong></td>
+                    <td><span class="badge badge-both">Both</span></td>
+                    <td>80% - 90%</td>
+                    <td>256 - 1,024</td>
+                    <td>Flexible modes</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Implementation Key Rules</h2>
+        <ul>
+            <li><strong>The Prefix Rule:</strong> Caching only works for exact, byte-identical prefix matches.</li>
+            <li><strong>Message Ordering:</strong> System Prompt &gt; Tools &gt; Stable Docs &gt; History &gt; Dynamic Query.</li>
+            <li><strong>Zero Variancy:</strong> Avoid dynamic data (like current time) at the start of the prompt.</li>
+        </ul>
+
+        <h2>Resources</h2>
+        <p>For detailed implementation details, see the <a href="implementation_guide.md">Implementation Guide</a>.</p>
+    </div>
+</body>
+</html>
